@@ -4,3 +4,16 @@ format: html
 editor: visual
 ---
 
+## Loading in the required packages and data to be used to answer the problems.
+
+```{r}
+# Loading required packages.
+library(tidyverse)  # loads ggplot2, dplyr, readr
+library(lubridate)  # for date/time manipulation
+
+```
+
+```{r}
+# Loading in the data
+df <- read_csv("elmarket_13_19.csv")
+```
