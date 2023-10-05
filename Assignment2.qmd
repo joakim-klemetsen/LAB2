@@ -58,8 +58,7 @@ plot_list <- list()
 # Looping through the variable list and applying the plot function for each variable
 for (i in variable_list) {
   p <- plot_avg_monthly(data = df, variable = i)  # calling the monthly plot function
-  plot_list[[i]] <- p                             # storing the plot in a list making it accessible later
-  print(p)                                        # printing the plot
+  plot_list[[i]] <- p                             # storing the plot in a list making it accessible later                 
 }
 ```
 
