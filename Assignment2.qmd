@@ -62,3 +62,16 @@ for (i in variable_list) {
 }
 ```
 
+We start by commenting the plot of monthly averages of temperature.
+```{r}
+# Plot monthly average temperature
+plot_list$temperature
+```
+As expected we see variations in average temperatures between the seasons. We notice that the lowest temperatures are recorded during winter and the highest during summers. Also, we notice that the min. and max. temperatures are relatively equal each year.
+
+We can also comment on the plot of monthly averages in volume. 
+```{r}
+# Plot monthly average volume
+plot_list$volume
+```
+
