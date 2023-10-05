@@ -19,3 +19,47 @@ df <- read_csv("elmarket_13_19.csv")
 ```
 
 ## Assignment 2
+
+## Task A. Plotting monthly averages of temparature, volume, price and wind production.
+```{r}
+# Creating a function that plots the average monthly data of a specified variable.
+plot_avg_monthly <- function(data, variable) {
+  
+  # Check if the specified variable is valid
+  if (variable %in% names(data)) {
+    
+    # Extract year and month, calculate the average per month
+    avg_data <- data %>%
+      mutate(year_month = floor_date(date, "month")) %>%
+      group_by(year_month) %>%
+      summarise(avg_var = mean(get(variable), na.rm = TRUE))
+    
+    # Plot
+    p <- ggplot(avg_data, aes(x = year_month, y = avg_var)) +
+      geom_line() +
+      labs(y = paste("Average", variable),
+           x = "Month",
+           title = paste("Average Monthly", variable)) +
+      theme_classic()
+    return(p)
+    
+  # If the specified variable is invalid  
+  } else {
+    stop("Invalid variable name. Choose a variable present in the data frame.")
+  }
+}
+
+# List of variables that we want to visualize monthly data
+variable_list <- c("volume", "temperature", "price", "wind_production")
+
+# Initialized list to store the plot objects
+plot_list <- list()
+
+# Looping through the variable list and applying the plot function for each variable
+for (i in variable_list) {
+  p <- plot_avg_monthly(data = df, variable = i)  # calling the monthly plot function
+  plot_list[[i]] <- p                             # storing the plot in a list making it accessible later
+  print(p)                                        # printing the plot
+}
+```
+
