@@ -17,3 +17,5 @@ library(lubridate)  # for date/time manipulation
 # Loading in the data
 df <- read_csv("elmarket_13_19.csv")
 ```
+
+## Assignment 2
