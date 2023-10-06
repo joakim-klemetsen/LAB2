@@ -78,18 +78,21 @@ We can also comment on the plot of monthly averages in volume.
 # Plot monthly average volume
 plot_list$volume
 ```
+In the plot we se that the energy consumption is is at max during winter and are lowest during winters. There are also differences between different year, but no great differences.
 
 The next plot to examine is the plot of monthly averages of price.
 ```{r}
 # Plot monthly average price
 plot_list$price
 ```
+We notice some seasonal trends in the prices of energy, however, the biggest variations is betwween years. W notice a substantial dip in energy prices during the summer of 2015, however the price continued to rise up until the winter of 2019. After that it has returned to 2018-levels.
 
 The last single plot to examine is the plot of monthly wind production.
 ```{r}
 # Plot monthly average wind production
 plot_list$wind_production. 
 ```
+Also in this plot we notice seasonal variations with highs during autumn/winter and lows during summer.
 
 
 ```{r}
