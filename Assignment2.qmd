@@ -54,7 +54,7 @@ plot_avg_monthly <- function(data, variable) {
 # Create a loop that creates plots of specified variables
 
 # List of variables that we want to visualize monthly data
-variable_list <- c("volume", "temperature", "price", "wind_production")
+variable_list <- c("temperature", "volume", "price", "wind_production")
 
 # Initialized list to store the plot objects
 plot_list <- list()
@@ -114,7 +114,7 @@ plot_avg_monthly_multi <- function(data, variables) {
     # Plot
     p <- ggplot(avg_data, aes(x = year_month)) +
       geom_line(aes(y = avg_var1), color = "red") +
-      geom_line(aes(y = avg_var2 * scale_factor), color = "blue") +
+      geom_line(aes(y = avg_var2 * scale_factor), color = "blue", linetype = "dashed") +
       scale_y_continuous(
         name = paste("Average", variables[1]),
         sec.axis = sec_axis(~. / scale_factor, name = paste("Average", variables[2])),
