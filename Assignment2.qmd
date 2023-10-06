@@ -10,7 +10,7 @@ editor: visual
 # Loading required packages.
 library(tidyverse)  # loads ggplot2, dplyr, readr
 library(lubridate)  # for date/time manipulation
-
+library(patchwork)  # to combine plots into a single plot
 ```
 
 ```{r}
@@ -94,7 +94,7 @@ plot_list$wind_production.
 ```
 Also in this plot we notice seasonal variations with highs during autumn/winter and lows during summer.
 
-
+Lastly, we can examine the relationship between the different variables. 
 ```{r}
 # Create a function that handles multiple variables and creates single plot
 plot_avg_monthly_multi <- function(data, variables) {
@@ -152,5 +152,10 @@ for (i in 1:(length(variable_list) - 1)) {
     plot_list_multi[[plot_name]] <- p
   }
 }
+```
+
+```{r}
+# Combine multi variable plots into a single plot
+combined_plot <- wrap_plots(plot_list_multi, ncol = 2)
 ```
 
