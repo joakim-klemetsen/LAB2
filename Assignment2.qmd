@@ -134,3 +134,20 @@ plot_avg_monthly_multi <- function(data, variables) {
 }
 ```
 
+```{r}
+# Plot relationship between variables
+
+# Initialize empty list
+plot_list_multi <- list()
+
+# Loop over variables and store comparison plots in list
+for (i in 1:(length(variable_list) - 1)) {
+  for (j in (i + 1):length(variable_list)) {
+    current_vars <- c(variable_list[i], variable_list[j])
+    p <- plot_avg_monthly_multi(df, current_vars)
+    plot_name <- paste(current_vars, collapse = "_vs_")
+    plot_list_multi[[plot_name]] <- p
+  }
+}
+```
+
