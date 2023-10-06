@@ -48,6 +48,10 @@ plot_avg_monthly <- function(data, variable) {
     stop("Invalid variable name. Choose a variable present in the data frame.")
   }
 }
+```
+
+```{r}
+# Create a loop that creates plots of specified variables
 
 # List of variables that we want to visualize monthly data
 variable_list <- c("volume", "temperature", "price", "wind_production")
