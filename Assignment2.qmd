@@ -157,7 +157,7 @@ for (i in 1:(length(variable_list) - 1)) {
 Comparing the four specified variables adds up to six comparison plots. Notice that to compare the variables, we have added a second axis to each plot since the variables have different scales. In some cases, like the temperature vs. volume plot, this has lead to some errors. Errors like this is easy to spot if you compare with the single variable plot. Despite the scaling errors we chose to include them since they visualize relationships between the variables.
 ```{r}
 # Combine multi variable plots into a single plot
-combined_plot <- wrap_plots(plot_list_multi, ncol = 2)
+combined_plot <- wrap_plots(plot_list_multi, ncol = 3)
 print(combined_plot)
 ```
 
