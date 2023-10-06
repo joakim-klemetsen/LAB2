@@ -75,7 +75,6 @@ We can also comment on the plot of monthly averages in volume.
 plot_list$volume
 ```
 
-
 The next plot to examine is the plot of monthly averages of price.
 ```{r}
 # Plot monthly average price
@@ -87,3 +86,47 @@ The last single plot to examine is the plot of monthly wind production.
 # Plot monthly average wind production
 plot_list$wind_production. 
 ```
+
+
+```{r}
+# Create a function that handles multiple variables and creates single plot
+plot_avg_monthly_multi <- function(data, variables) {
+  
+  # Check if the specified variable is valid
+  if (all(variables %in% names(data))) {
+    
+    # Extract year and month, calculate the average per month of both variables
+    avg_data <- data %>%
+      mutate(year_month = floor_date(date, "month")) %>%
+      group_by(year_month) %>%
+      summarise(avg_var1 = mean(get(variables[1]), na.rm = TRUE),
+                avg_var2 = mean(get(variables[2]), na.rm = TRUE), 
+                .groups = "drop")
+    
+    # Compute a scaling factor to map both variables onto a similar scale
+    scale_factor <- mean(avg_data$avg_var1, na.rm = TRUE) / 
+                    mean(avg_data$avg_var2, na.rm = TRUE)
+    
+    # Plot
+    p <- ggplot(avg_data, aes(x = year_month)) +
+      geom_line(aes(y = avg_var1), color = "red") +
+      geom_line(aes(y = avg_var2 * scale_factor), color = "blue") +
+      scale_y_continuous(
+        name = paste("Average", variables[1]),
+        sec.axis = sec_axis(~. / scale_factor, name = paste("Average", variables[2])),
+        labels = scales::number
+      ) +
+      labs(
+        x = "Month",
+        title = paste("Monthly averages of", paste(variables, collapse = " & "))
+      ) +
+      theme_classic()
+    return(p)
+    
+  # If the specified variable is invalid  
+  } else {
+    stop("Invalid variable name. Choose variables present in the data frame.")
+  }
+}
+```
+
