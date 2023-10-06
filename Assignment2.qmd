@@ -75,3 +75,15 @@ We can also comment on the plot of monthly averages in volume.
 plot_list$volume
 ```
 
+
+The next plot to examine is the plot of monthly averages of price.
+```{r}
+# Plot monthly average price
+plot_list$price
+```
+
+The last single plot to examine is the plot of monthly wind production.
+```{r}
+# Plot monthly average wind production
+plot_list$wind_production. 
+```
