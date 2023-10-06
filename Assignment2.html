@@ -271,13 +271,21 @@ date  (1): date
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Comparing the four specified variables adds up to six comparison plots. Notice that to compare the variables, we have added a second axis to each plot since the variables have different scales. In some cases, like the temperature vs.&nbsp;volume plot, this has lead to some errors. Errors like this is easy to spot if you compare with the single variable plot. Despite the scaling errors we chose to include them since they visualize relationships between the variables.</p>
+<p>Comparing the four specified variables adds up to six comparison plots. We chose only to discuss the three most relevant, temperature vs.&nbsp;volume, price vs.&nbsp;volume, and price vs.&nbsp;wind_production. Notice that to compare the variables, we have added a second axis to each plot since the variables have different scales. In some cases, like the temperature vs.&nbsp;volume plot, this has lead to some errors. Errors like this is easy to spot if you compare with the single variable plot. Despite the scaling errors we chose to include them since they visualize relationships between the variables.</p>
+<p>The first plot we examine is the temperature vs.&nbsp;volume plot.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine multi variable plots into a single plot</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> <span class="fu">wrap_plots</span>(plot_list_multi, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(combined_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare temperature vs. volume</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plot_list_multi<span class="sc">$</span>temperature_vs_volume</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Assignment2_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Despite the errors in scaling, we notice that when temperatures increases, the volume decrease and vice versa.</p>
+<p>The second plot of interest is the volume vs.&nbsp;price plot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>plot_list_multi<span class="sc">$</span>volume_vs_price</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Assignment2_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
