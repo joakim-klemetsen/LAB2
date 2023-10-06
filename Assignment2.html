@@ -271,7 +271,7 @@ date  (1): date
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Comparing the four specified variables adds up to six comparison plots. We chose only to discuss the three most relevant, temperature vs.&nbsp;volume, price vs.&nbsp;volume, and price vs.&nbsp;wind_production. Notice that to compare the variables, we have added a second axis to each plot since the variables have different scales. In some cases, like the temperature vs.&nbsp;volume plot, this has lead to some errors. Errors like this is easy to spot if you compare with the single variable plot. Despite the scaling errors we chose to include them since they visualize relationships between the variables.</p>
+<p>Comparing the four specified variables adds up to six comparison plots. We chose only to discuss the three most relevant, temperature vs.&nbsp;volume and price vs.&nbsp;volume. Notice that to compare the variables, we have added a second axis to each plot since the variables have different scales. In some cases, like the temperature vs.&nbsp;volume plot, this has lead to some errors. Errors like this is easy to spot if you compare with the single variable plot. Despite the scaling errors we chose to include them since they visualize relationships between the variables.</p>
 <p>The first plot we examine is the temperature vs.&nbsp;volume plot.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare temperature vs. volume</span></span>
@@ -289,14 +289,28 @@ date  (1): date
 </div>
 </div>
 <p>We notice the at times close relationship of the two variables. In periods of high volume, the price tends to be relativly high and vice versa. This is likely due to a energy surplus in periods with low demand resulting in low prices, and increased prices in periods of high demand.</p>
-<p>The last comparison plot is the price vs.&nbsp;wind production plot.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare price and wind production</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>plot_list_multi<span class="sc">$</span>price_vs_wind_production</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="Assignment2_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
+</section>
+<section id="task-b.-why-will-a-ols-regression-on-quantity-not-provide-an-estimate-of-demand" class="level2">
+<h2 class="anchored" data-anchor-id="task-b.-why-will-a-ols-regression-on-quantity-not-provide-an-estimate-of-demand">Task B. Why will a OLS regression on quantity not provide an estimate of demand?</h2>
+<p>An OLS regression of quantity on price alone, even with controls, is not fitted to estimate demand due to many reasons:</p>
+<ol type="1">
+<li><p>Endogeneity exists as price and quantity in markets are simultaneously determined</p></li>
+<li><p>Omitted variables like for example consumer income, advertising and seasonality. These can affect and lead to omitted variable bias.</p></li>
+<li><p>Measurement errors in price and quantity can contribute to bias for the estimates for the parameters</p></li>
+<li><p>OLS (or Gauss-Markow theorem) assumes a linear relationship. This may not hold if the demand curves are nonlinear.</p></li>
+<li><p>Heteroskedasticity which is variability in the error term given any explanatory variable. In this case the variability in quantity varies across price levels which in return can affect standard erros.</p></li>
+<li><p>The demand’s dynamic behavior and seasonality may not be sufficiently captured. To estimate demand accurately, more advanced econometric methods are often required. These advanced methods usually contain instrumental variable regression and structural equation modelling. Controlling for relevant factors and improve our data quality can also make the estimation precision better.</p></li>
+</ol>
+</section>
+<section id="task-c.-considering-choice-of-instrument-for-price-when-estimating-demand" class="level2">
+<h2 class="anchored" data-anchor-id="task-c.-considering-choice-of-instrument-for-price-when-estimating-demand">Task C. Considering choice of instrument for price when estimating demand</h2>
+<p>When choosing a instrument for price when estimating demand, it’s important to consider the validity of the instrument in terms of the requirements for a valid instrument. These requirements can be relevance, exogeneity, and exclusion restrictions:</p>
+<ol type="1">
+<li><p>Why is temperature not a valid instrument for price when estimating demand? The key requirements for exogeneity may not be satisfied if one were to use temperature as an instrument for price when estimating demand. (Exogeneity refers to the condition in which an independent variable is unrelated to the error term, indicating that it is not influenced by unobserved factors in the model.) Temperature is usually affected by factors that also may affect demand, like seasonality and consumber behavior. The instrument would not be valid due to endogeneity concerns if temperature is correlated with unobservable demand shocks.</p></li>
+<li><p>Why can magazine levels (or deviations) and wind power production potentially be good instruments for price when estimating demand? Magazine levels and wind power production could potentially be sufficient instruments for price as they can fulfil the requirements for a valid instrument. They should be relevant in other terms they should be affecting the price. In addition, they should be exogenous, meaning that they should not be correlated with unobservable factors. But establishing their exogeneity requires thoughtful consideration and testing.</p></li>
+<li><p>Why is it necessary to control for seasonality (say, calendar month) and temperature? It is necessary to control for seasonality and temperature to avoid omitted variable bias. (Omitted variable bias appear if a relevant variable that affects the dependent variable is excluded in a regression model. This leads to biased and estimates of the coefficients of the variables that are included.) Seasonality captures variation in the systematic demand throughout the year unrelated to price. Meanwhile temperature affects demand independently. When we control for these factors, we ensure precise demand estimates.</p></li>
+<li><p>How could controlling for weekday and year be useful? Incorporating controls for weekday and year is beneficial to justify for demand patterns variation. Weekdays and weekends usually give different demand profiles given the consumers consumption. Meanwhile years would capture trends that are long-term and macroeconomic affects on demand. These controls strengthen the accuracy of demand estimates, while taking into account sources of variation unrelated to price.</p></li>
+</ol>
 </section>
 
 </main>
