@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2"
-format: html
+format: pdf
 editor: visual
 ---
 
