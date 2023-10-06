@@ -21,6 +21,7 @@ df <- read_csv("elmarket_13_19.csv")
 ## Assignment 2
 
 ## Task A. Plotting monthly averages of temparature, volume, price and wind production.
+
 ```{r}
 # Creating a function that plots the average monthly data of a specified variable.
 plot_avg_monthly <- function(data, variable) {
@@ -67,34 +68,43 @@ for (i in variable_list) {
 ```
 
 We start by commenting the plot of monthly averages of temperature.
+
 ```{r}
 # Plot monthly average temperature
 plot_list$temperature
 ```
+
 As expected we see variations in average temperatures between the seasons. We notice that the lowest temperatures are recorded during winter and the highest during summers. Also, we notice that the min. and max. temperatures are relatively equal each year.
 
-We can also comment on the plot of monthly averages in volume. 
+We can also comment on the plot of monthly averages in volume.
+
 ```{r}
 # Plot monthly average volume
 plot_list$volume
 ```
+
 In the plot we se that the energy consumption is is at max during winter and are lowest during winters. There are also differences between different year, but no great differences.
 
 The next plot to examine is the plot of monthly averages of price.
+
 ```{r}
 # Plot monthly average price
 plot_list$price
 ```
+
 We notice some seasonal trends in the prices of energy, however, the biggest variations is betwween years. W notice a substantial dip in energy prices during the summer of 2015, however the price continued to rise up until the winter of 2019. After that it has returned to 2018-levels.
 
 The last single plot to examine is the plot of monthly wind production.
+
 ```{r}
 # Plot monthly average wind production
 plot_list$wind_production. 
 ```
+
 Also in this plot we notice seasonal variations with highs during autumn/winter and lows during summer.
 
-Lastly, we can examine the relationship between the different variables. 
+Lastly, we can examine the relationship between the different variables.
+
 ```{r}
 # Create a function that handles multiple variables and creates single plot
 plot_avg_monthly_multi <- function(data, variables) {
@@ -157,16 +167,34 @@ for (i in 1:(length(variable_list) - 1)) {
 Comparing the four specified variables adds up to six comparison plots. We chose only to discuss the three most relevant, temperature vs. volume and price vs. volume. Notice that to compare the variables, we have added a second axis to each plot since the variables have different scales. In some cases, like the temperature vs. volume plot, this has lead to some errors. Errors like this is easy to spot if you compare with the single variable plot. Despite the scaling errors we chose to include them since they visualize relationships between the variables.
 
 The first plot we examine is the temperature vs. volume plot.
+
 ```{r}
 # Compare temperature vs. volume
 plot_list_multi$temperature_vs_volume
 ```
+
 Despite the errors in scaling, we notice that when temperatures increases, the volume decrease and vice versa.
 
 The second plot of interest is the volume vs. price plot.
+
 ```{r}
 plot_list_multi$volume_vs_price
 ```
+
 We notice the at times close relationship of the two variables. In periods of high volume, the price tends to be relativly high and vice versa. This is likely due to a energy surplus in periods with low demand resulting in low prices, and increased prices in periods of high demand.
 
+## Task B. Why will a OLS regression on quantity not provide an estimate of demand?
 
+An OLS regression of quantity on price alone, even with controls, is not fitted to estimate demand due to many reasons:
+
+1.  Endogeneity exists as price and quantity in markets are simultaneously determined
+
+2.  Omitted variables like for example consumer income, advertising and seasonality. These can affect and lead to omitted variable bias.
+
+3.  Measurement errors in price and quantity can contribute to bias for the estimates for the parameters
+
+4.  OLS (or Gauss-Markow theorem) assumes a linear relationship. This may not hold if the demand curves are nonlinear.
+
+5.  Heteroskedasticity which is variability in the error term given any explanatory variable. In this case the variability in quantity varies across price levels which in return can affect standard erros.
+
+6.  The demand's dynamic behavior and seasonality may not be sufficiently captured. To estimate demand accurately, more advanced econometric methods are often required. These advanced methods usually contain instrumental variable regression and structural equation modelling. Controlling for relevant factors and improve our data quality can also make the estimation precision better.
