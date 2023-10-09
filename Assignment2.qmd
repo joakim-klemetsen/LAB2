@@ -170,11 +170,6 @@ stargazer(reg_list,
           type = "text",
           dep.var.labels = "volume",
           
-          # Omit the dummies from the table to increase readability
-          omit = c(
-            "as.factor(year)",
-            "as.factor(month)",
-            "as.factor(weekday)"
-          )
-)
+          # Omit all the dummies to make regression table more readable
+          keep = c("price", "temperature"))
 ```
