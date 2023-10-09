@@ -22,165 +22,57 @@ df <- read_csv("elmarket_13_19.csv")
 ## Task A. Plotting monthly averages of temparature, volume, price and wind production.
 
 ```{r}
-# Creating a function that plots the average monthly data of a specified variable.
-plot_avg_monthly <- function(data, variable) {
-  
-  # Check if the specified variable is valid
-  if (variable %in% names(data)) {
+# Create a data frame of monthly averages of the variables volume, price, 
+# temperature and wind_production in long format.
+df_avg_long <- 
+  df %>% 
     
-    # Extract year and month, calculate the average per month
-    avg_data <- data %>%
-      mutate(year_month = floor_date(date, "month")) %>%
-      group_by(year_month) %>%
-      summarise(avg_var = mean(get(variable), na.rm = TRUE))
+    # Select the specified variables
+    select(date, volume, temperature, price, wind_production) %>% 
     
-    # Plot
-    p <- ggplot(avg_data, aes(x = year_month, y = avg_var)) +
-      geom_line() +
-      labs(y = paste("Average", variable),
-           x = "Month",
-           title = paste("Average Monthly", variable)) +
-      theme_classic()
-    return(p)
+    # Calculate monthly averages for each variable
+    mutate(year_month = floor_date(date, "month")) %>% 
+    group_by(year_month) %>% 
+    summarise(
+      avg_vol = mean(volume, na.rm = TRUE),
+      avg_temp = mean(temperature, na.rm = TRUE),
+      avg_price = mean(price, na.rm = TRUE),
+      avg_wind = mean(wind_production, na.rm = TRUE)
+    ) %>% 
     
-  # If the specified variable is invalid  
-  } else {
-    stop("Invalid variable name. Choose a variable present in the data frame.")
-  }
-}
-```
-
-```{r}
-# Create a loop that creates plots of specified variables
-
-# List of variables that we want to visualize monthly data
-variable_list <- c("temperature", "volume", "price", "wind_production")
-
-# Initialized list to store the plot objects
-plot_list <- list()
-
-# Looping through the variable list and applying the plot function for each variable
-for (i in variable_list) {
-  p <- plot_avg_monthly(data = df, variable = i)  # calling the monthly plot function
-  plot_list[[i]] <- p                             # storing the plot in a list making it accessible later                 
-}
-```
-
-We start by commenting the plot of monthly averages of temperature.
-
-```{r}
-# Plot monthly average temperature
-plot_list$temperature
-```
-
-As expected we see variations in average temperatures between the seasons. We notice that the lowest temperatures are recorded during winter and the highest during summers. Also, we notice that the min. and max. temperatures are relatively equal each year.
-
-We can also comment on the plot of monthly averages in volume.
-
-```{r}
-# Plot monthly average volume
-plot_list$volume
-```
-
-In the plot we se that the energy consumption is is at max during winter and are lowest during winters. There are also differences between different year, but no great differences.
-
-The next plot to examine is the plot of monthly averages of price.
-
-```{r}
-# Plot monthly average price
-plot_list$price
-```
-
-We notice some seasonal trends in the prices of energy, however, the biggest variations is betwween years. W notice a substantial dip in energy prices during the summer of 2015, however the price continued to rise up until the winter of 2019. After that it has returned to 2018-levels.
-
-The last single plot to examine is the plot of monthly wind production.
-
-```{r}
-# Plot monthly average wind production
-plot_list$wind_production. 
-```
-
-Also in this plot we notice seasonal variations with highs during autumn/winter and lows during summer.
-
-Lastly, we can examine the relationship between the different variables.
-
-```{r}
-# Create a function that handles multiple variables and creates single plot
-plot_avg_monthly_multi <- function(data, variables) {
-  
-  # Check if the specified variable is valid
-  if (all(variables %in% names(data))) {
+    # Scale the values of volume and wind to make the plot readable
+    mutate(
+      avg_vol = avg_vol / 10^5, 
+      avg_wind = avg_wind / 10^3
+    ) %>% 
     
-    # Extract year and month, calculate the average per month of both variables
-    avg_data <- data %>%
-      mutate(year_month = floor_date(date, "month")) %>%
-      group_by(year_month) %>%
-      summarise(avg_var1 = mean(get(variables[1]), na.rm = TRUE),
-                avg_var2 = mean(get(variables[2]), na.rm = TRUE), 
-                .groups = "drop")
-    
-    # Compute a scaling factor to map both variables onto a similar scale
-    scale_factor <- mean(avg_data$avg_var1, na.rm = TRUE) / 
-                    mean(avg_data$avg_var2, na.rm = TRUE)
-    
-    # Plot
-    p <- ggplot(avg_data, aes(x = year_month)) +
-      geom_line(aes(y = avg_var1), color = "red") +
-      geom_line(aes(y = avg_var2 * scale_factor), color = "blue", linetype = "dashed") +
-      scale_y_continuous(
-        name = paste("Average", variables[1]),
-        sec.axis = sec_axis(~. / scale_factor, name = paste("Average", variables[2])),
-        labels = scales::number
-      ) +
-      labs(
-        x = "Month",
-        title = paste("Monthly averages of", paste(variables, collapse = " & "))
-      ) +
-      theme_classic()
-    return(p)
-    
-  # If the specified variable is invalid  
-  } else {
-    stop("Invalid variable name. Choose variables present in the data frame.")
-  }
-}
+    # Pivot to long format
+    pivot_longer(
+      cols = -year_month,
+      names_to = "variable",
+      values_to = "scaled values"
+    )
 ```
 
 ```{r}
-# Plot relationship between variables
-
-# Initialize empty list
-plot_list_multi <- list()
-
-# Loop over variables and store comparison plots in list
-for (i in 1:(length(variable_list) - 1)) {
-  for (j in (i + 1):length(variable_list)) {
-    current_vars <- c(variable_list[i], variable_list[j])
-    p <- plot_avg_monthly_multi(df, current_vars)
-    plot_name <- paste(current_vars, collapse = "_vs_")
-    plot_list_multi[[plot_name]] <- p
-  }
-}
+# Plot the specified variables
+df_avg_long %>% 
+  ggplot(
+    aes(
+      x = year_month,
+      y = `scaled values`,
+      col = variable
+    )
+  ) +
+  geom_line() +
+  labs(
+    x = "Month",
+    y = "Scaled Values",
+    title = "Monthly (scaled) averages of volume, temperature, price and wind production"
+  ) +
+  theme_classic()
 ```
 
-Comparing the four specified variables adds up to six comparison plots. We chose only to discuss the three most relevant, temperature vs. volume and price vs. volume. Notice that to compare the variables, we have added a second axis to each plot since the variables have different scales. In some cases, like the temperature vs. volume plot, this has lead to some errors. Errors like this is easy to spot if you compare with the single variable plot. Despite the scaling errors we chose to include them since they visualize relationships between the variables.
-
-The first plot we examine is the temperature vs. volume plot.
-
-```{r}
-# Compare temperature vs. volume
-plot_list_multi$temperature_vs_volume
-```
-
-Despite the errors in scaling, we notice that when temperatures increases, the volume decrease and vice versa.
-
-The second plot of interest is the volume vs. price plot.
-
-```{r}
-plot_list_multi$volume_vs_price
-```
-
-We notice the at times close relationship of the two variables. In periods of high volume, the price tends to be relativly high and vice versa. This is likely due to a energy surplus in periods with low demand resulting in low prices, and increased prices in periods of high demand.
 
 ## Task B. Why will a OLS regression on quantity not provide an estimate of demand?
 
