@@ -57,6 +57,8 @@ df_avg_long <-
 ```
 
 ```{r}
+#| label: variable_plot
+#| fig-cap: Monthly averages of temperature, volume, price and wind power production. The values have been scaled to fit into a single plot. 
 # Plot the specified variables
 df_avg_long %>% 
   ggplot(
