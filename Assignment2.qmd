@@ -77,12 +77,11 @@ df_avg_long %>%
   theme_classic()
 ```
 
-To discuss the relationships between temperature, volume, price and wind power production we chos
-The variables in the data set have vastly different scales. To surpass this issue when comparing the specified variables and in discussing their relationship, we chose to scale the values of the monthly averages of volume and wind power production by dividing their values of factors of 10^5 and 10^4 respectively. 
+To discuss the relationships between temperature, volume, price and wind power production we chos The variables in the data set have vastly different scales. To surpass this issue when comparing the specified variables and in discussing their relationship, we chose to scale the values of the monthly averages of volume and wind power production by dividing their values of factors of 10\^5 and 10\^4 respectively.
 
 We notice large seasonal variations in all variables. Especially in average temperatures and volume there is little variation between each year. The monthly average price had a dip in the summer of 2015, but increased steadily up until the Covid19-pandemic in the spring of 2019. The wind power production have strong seasonal variations, but we notice that the average wind production has increased over the period by a large margin.
 
-When analyzing the relationship between the variables, we noticed what is likely a negative correlation between temperature and volume. This seems likely as the temperature decreases the demand for energy increases. Also we notice the negative correlation between wind production and temperature. This is likely due to the fact that the colder periods like winter and autumn is more windy. Lastly, we notice the positive correlation between volume and price. This is likely because in periods of high demand, the supply of energy is strained resulting in a higher price for electric energy. 
+When analyzing the relationship between the variables, we noticed what is likely a negative correlation between temperature and volume. This seems likely as the temperature decreases the demand for energy increases. Also we notice the negative correlation between wind production and temperature. This is likely due to the fact that the colder periods like winter and autumn is more windy. Lastly, we notice the positive correlation between volume and price. This is likely because in periods of high demand, the supply of energy is strained resulting in a higher price for electric energy.
 
 There is likely more relationships between the variables that can be identified and discussed using the plot we have provided. We chose to only comment on the most apparent of the relationsships at this point.
 
@@ -106,15 +105,16 @@ An OLS regression of quantity on price alone, even with controls, is not fitted 
 
 When choosing a instrument for price when estimating demand, it's important to consider the validity of the instrument in terms of the requirements for a valid instrument. These requirements can be relevance, exogeneity, and exclusion restrictions:
 
-1.  Why is temperature not a valid instrument for price when estimating demand? The key requirements for exogeneity may not be satisfied if one were to use temperature as an instrument for price when estimating demand. (Exogeneity refers to the condition in which an independent variable is unrelated to the error term, indicating that it is not influenced by unobserved factors in the model.) Temperature is usually affected by factors that also may affect demand, like seasonality and consumber behavior. The instrument would not be valid due to endogeneity concerns if temperature is correlated with unobservable demand shocks.
+1.  **Why is temperature not a valid instrument for price when estimating demand?** The key requirements for exogeneity may not be satisfied if one were to use temperature as an instrument for price when estimating demand. (Exogeneity refers to the condition in which an independent variable is unrelated to the error term, indicating that it is not influenced by unobserved factors in the model.) Temperature is usually affected by factors that also may affect demand, like seasonality and consumber behavior. The instrument would not be valid due to endogeneity concerns if temperature is correlated with unobservable demand shocks.
 
-2.  Why can magazine levels (or deviations) and wind power production potentially be good instruments for price when estimating demand? Magazine levels and wind power production could potentially be sufficient instruments for price as they can fulfil the requirements for a valid instrument. They should be relevant in other terms they should be affecting the price. In addition, they should be exogenous, meaning that they should not be correlated with unobservable factors. But establishing their exogeneity requires thoughtful consideration and testing.
+2.  **Why can magazine levels (or deviations) and wind power production potentially be good instruments for price when estimating demand?** Magazine levels and wind power production could potentially be sufficient instruments for price as they can fulfil the requirements for a valid instrument. They should be relevant in other terms they should be affecting the price. In addition, they should be exogenous, meaning that they should not be correlated with unobservable factors. But establishing their exogeneity requires thoughtful consideration and testing.
 
-3.  Why is it necessary to control for seasonality (say, calendar month) and temperature? It is necessary to control for seasonality and temperature to avoid omitted variable bias. (Omitted variable bias appear if a relevant variable that affects the dependent variable is excluded in a regression model. This leads to biased and estimates of the coefficients of the variables that are included.) Seasonality captures variation in the systematic demand throughout the year unrelated to price. Meanwhile temperature affects demand independently. When we control for these factors, we ensure precise demand estimates.
+3.  **Why is it necessary to control for seasonality (say, calendar month) and temperature?** It is necessary to control for seasonality and temperature to avoid omitted variable bias. (Omitted variable bias appear if a relevant variable that affects the dependent variable is excluded in a regression model. This leads to biased and estimates of the coefficients of the variables that are included.) Seasonality captures variation in the systematic demand throughout the year unrelated to price. Meanwhile temperature affects demand independently. When we control for these factors, we ensure precise demand estimates.
 
-4.  How could controlling for weekday and year be useful? Incorporating controls for weekday and year is beneficial to justify for demand patterns variation. Weekdays and weekends usually give different demand profiles given the consumers consumption. Meanwhile years would capture trends that are long-term and macroeconomic affects on demand. These controls strengthen the accuracy of demand estimates, while taking into account sources of variation unrelated to price.
+4.  **How could controlling for weekday and year be useful?** Incorporating controls for weekday and year is beneficial to justify for demand patterns variation. Weekdays and weekends usually give different demand profiles given the consumers consumption. Meanwhile years would capture trends that are long-term and macroeconomic affects on demand. These controls strengthen the accuracy of demand estimates, while taking into account sources of variation unrelated to price.
 
 ## D. Performing OLS regressions
+
 ```{r}
 # Create new variables in data frame containing the year, month and day in 
 # which the observation is made.
@@ -176,9 +176,5 @@ stargazer(reg_list,
             "as.factor(month)",
             "as.factor(weekday)"
           )
-          )
+)
 ```
-
-
-
-
