@@ -166,7 +166,17 @@ for (i in 1:length(formulas)) {
 
 ```{r}
 # Create regression tables
-stargazer(reg_list, type = "text",dep.var.labels = "volume")
+stargazer(reg_list, 
+          type = "text",
+          dep.var.labels = "volume",
+          
+          # Omit the dummies from the table to increase readability
+          omit = c(
+            "as.factor(year)",
+            "as.factor(month)",
+            "as.factor(weekday)"
+          )
+          )
 ```
 
 
