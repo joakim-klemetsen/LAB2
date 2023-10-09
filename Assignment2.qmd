@@ -134,15 +134,25 @@ df <-
 formulas <- 
   list(
     
-    # Structural form
+    # Structural form: Demand
     volume ~ 
       price + temperature + as.factor(year) + as.factor(month) + as.factor(weekday),
     
-    # Reduced form 
-    volume ~ 
-      price
+    # Reduced form: Demand
+    #volume ~ 
+      #price
     
-    # First stage
+    # First stage: Demand
+    
+    # Structural form: Price
+    price ~ 
+      magazine_level + temperature + wind_production + as.factor(year) + as.factor(month) + as.factor(weekday)
+    
+    # Reduced form: Price
+    #volume ~ 
+      #price
+    
+    # First stage: Price
     
   )
 ```
@@ -168,8 +178,8 @@ for (i in 1:length(formulas)) {
 # Create regression tables
 stargazer(reg_list, 
           type = "text",
-          dep.var.labels = "volume",
+          dep.var.labels = c("volume", "price"),
           
           # Omit all the dummies to make regression table more readable
-          keep = c("price", "temperature"))
+          keep = c("price", "temperature", "wind_production", "magazine_level", "Constant"))
 ```
