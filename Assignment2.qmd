@@ -4,20 +4,22 @@ format: pdf
 editor: visual
 ---
 
-## Loading in the required packages and data to be used to answer the problems.
-
 ```{r}
+#| echo: false
+#| output: false
 # Loading required packages.
 library(tidyverse)  # loads ggplot2, dplyr, readr
 library(lubridate)  # for date/time manipulation
 ```
 
 ```{r}
+#| echo: false
+#| output: false
 # Loading in the data
 df <- read_csv("elmarket_13_19.csv")
 ```
 
-## Assignment 2
+# Assignment 2
 
 ## Task A. Plotting monthly averages of temparature, volume, price and wind production.
 
@@ -66,9 +68,9 @@ df_avg_long %>%
   ) +
   geom_line() +
   labs(
-    x = "Month",
+    x = "",
     y = "Scaled Values",
-    title = "Monthly (scaled) averages of volume, temperature, price and wind production"
+    title = "Averages of volume, temperature, price and wind production"
   ) +
   theme_classic()
 ```
