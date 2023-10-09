@@ -75,6 +75,14 @@ df_avg_long %>%
   theme_classic()
 ```
 
+To discuss the relationships between temperature, volume, price and wind power production we chos
+The variables in the data set have vastly different scales. To surpass this issue when comparing the specified variables and in discussing their relationship, we chose to scale the values of the monthly averages of volume and wind power production by dividing their values of factors of 10^5 and 10^4 respectively. 
+
+We notice large seasonal variations in all variables. Especially in average temperatures and volume there is little variation between each year. The monthly average price had a dip in the summer of 2015, but increased steadily up until the Covid19-pandemic in the spring of 2019. The wind power production have strong seasonal variations, but we notice that the average wind production has increased over the period by a large margin.
+
+When analyzing the relationship between the variables, we noticed what is likely a negative correlation between temperature and volume. This seems likely as the temperature decreases the demand for energy increases. Also we notice the negative correlation between wind production and temperature. This is likely due to the fact that the colder periods like winter and autumn is more windy. Lastly, we notice the positive correlation between volume and price. This is likely because in periods of high demand, the supply of energy is strained resulting in a higher price for electric energy. 
+
+There is likely more relationships between the variables that can be identified and discussed using the plot we have provided. We chose to only comment on the most apparent of the relationsships at this point.
 
 ## Task B. Why will a OLS regression on quantity not provide an estimate of demand?
 
