@@ -10,6 +10,7 @@ editor: visual
 # Loading required packages.
 library(tidyverse)  # loads ggplot2, dplyr, readr
 library(lubridate)  # for date/time manipulation
+library(stargazer)  # regression tables
 ```
 
 ```{r}
@@ -71,8 +72,7 @@ df_avg_long %>%
   geom_line() +
   labs(
     x = "",
-    y = "Scaled Values",
-    title = "Averages of volume, temperature, price and wind production"
+    y = ""
   ) +
   theme_classic()
 ```
@@ -113,3 +113,62 @@ When choosing a instrument for price when estimating demand, it's important to c
 3.  Why is it necessary to control for seasonality (say, calendar month) and temperature? It is necessary to control for seasonality and temperature to avoid omitted variable bias. (Omitted variable bias appear if a relevant variable that affects the dependent variable is excluded in a regression model. This leads to biased and estimates of the coefficients of the variables that are included.) Seasonality captures variation in the systematic demand throughout the year unrelated to price. Meanwhile temperature affects demand independently. When we control for these factors, we ensure precise demand estimates.
 
 4.  How could controlling for weekday and year be useful? Incorporating controls for weekday and year is beneficial to justify for demand patterns variation. Weekdays and weekends usually give different demand profiles given the consumers consumption. Meanwhile years would capture trends that are long-term and macroeconomic affects on demand. These controls strengthen the accuracy of demand estimates, while taking into account sources of variation unrelated to price.
+
+## D. Performing OLS regressions
+```{r}
+# Create new variables in data frame containing the year, month and day in 
+# which the observation is made.
+df <- 
+  df %>% 
+  mutate(
+    year = year(date),
+    month = month(date),
+    weekday = wday(date,
+                   label = FALSE,
+                   week_start = 1)
+  )
+```
+
+```{r}
+# Define formulas to apply in the regressions
+formulas <- 
+  list(
+    
+    # Structural form
+    volume ~ 
+      price + temperature + as.factor(year) + as.factor(month) + as.factor(weekday),
+    
+    # Reduced form 
+    volume ~ 
+      price
+    
+    # First stage
+    
+  )
+```
+
+```{r}
+# Perform regressions for all the specified formulas
+
+# Empty reg list
+reg_list <- list()
+
+# Loop over all formulas
+for (i in 1:length(formulas)) {
+  
+  # Perform regression with specified formula
+  reg <- lm(formulas[[i]], df)
+  
+  # Save the regression
+  reg_list[[i]] <- reg
+}
+```
+
+```{r}
+# Create regression tables
+stargazer(reg_list, type = "text",dep.var.labels = "volume")
+```
+
+
+
+
