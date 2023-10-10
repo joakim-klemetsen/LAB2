@@ -118,10 +118,12 @@ When choosing a instrument for price when estimating demand, it's important to c
 
 ```{r}
 # Create new variables in data frame containing the dummies for
-# year, month and day in which the observation is made.
-df <- 
+# year, month and day in which the observation is made and scale variables.
+df_new <- 
   df %>% 
   mutate(
+    volume = volume / 1000,
+    wind_production = wind_production / 1000,
     year = as.factor(year(date)),
     month = as.factor(month(date)),
     weekday = as.factor(wday(date,
@@ -136,26 +138,26 @@ df <-
 # First stage
 first_stage <- lm(
   price ~ magazine_level + temperature + wind_production + year + month + weekday,
-  data = df
+  data = df_new
 )
 
 # Reduced form
 reduced_form <- lm(
   volume ~ magazine_level + temperature + wind_production + year + month + weekday,
-  data = df
+  data = df_new
 )
 
 # IV/2SLS 
 iv_model <- ivreg(
   volume ~ price + temperature + year + month + weekday 
   | magazine_level + temperature + wind_production + year + month + weekday, 
-  data = df
+  data = df_new
 )
 
 # OLS
 ols_model <- lm(
   volume ~ price + temperature + year + month + weekday,
-  data = df
+  data = df_new
 )
 ```
 
