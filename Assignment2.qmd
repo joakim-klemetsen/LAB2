@@ -11,6 +11,7 @@ editor: visual
 library(tidyverse)  # loads ggplot2, dplyr, readr
 library(lubridate)  # for date/time manipulation
 library(stargazer)  # regression tables
+library(AER)        # IV/2SLS regression
 ```
 
 ```{r}
@@ -77,13 +78,13 @@ df_avg_long %>%
   theme_classic()
 ```
 
-To discuss the relationships between temperature, volume, price and wind power production we chos The variables in the data set have vastly different scales. To surpass this issue when comparing the specified variables and in discussing their relationship, we chose to scale the values of the monthly averages of volume and wind power production by dividing their values of factors of 10\^5 and 10\^4 respectively.
+To discuss the relationships between temperature, volume, price and wind power production we chose The variables in the data set have vastly different scales. To surpass this issue when comparing the specified variables and in discussing their relationship, we chose to scale the values of the monthly averages of volume and wind power production by dividing their values of factors of 10\^5 and 10\^4 respectively.
 
 We notice large seasonal variations in all variables. Especially in average temperatures and volume there is little variation between each year. The monthly average price had a dip in the summer of 2015, but increased steadily up until the Covid19-pandemic in the spring of 2019. The wind power production have strong seasonal variations, but we notice that the average wind production has increased over the period by a large margin.
 
 When analyzing the relationship between the variables, we noticed what is likely a negative correlation between temperature and volume. This seems likely as the temperature decreases the demand for energy increases. Also we notice the negative correlation between wind production and temperature. This is likely due to the fact that the colder periods like winter and autumn is more windy. Lastly, we notice the positive correlation between volume and price. This is likely because in periods of high demand, the supply of energy is strained resulting in a higher price for electric energy.
 
-There is likely more relationships between the variables that can be identified and discussed using the plot we have provided. We chose to only comment on the most apparent of the relationsships at this point.
+There is likely more relationships between the variables that can be identified and discussed using the plot we have provided. We chose to only comment on the most apparent of the relationships at this point.
 
 ## Task B. Why will a OLS regression on quantity not provide an estimate of demand?
 
@@ -116,16 +117,16 @@ When choosing a instrument for price when estimating demand, it's important to c
 ## D. Performing OLS regressions
 
 ```{r}
-# Create new variables in data frame containing the year, month and day in 
-# which the observation is made.
+# Create new variables in data frame containing the dummies for
+# year, month and day in which the observation is made.
 df <- 
   df %>% 
   mutate(
-    year = year(date),
-    month = month(date),
-    weekday = wday(date,
+    year = as.factor(year(date)),
+    month = as.factor(month(date)),
+    weekday = as.factor(wday(date,
                    label = FALSE,
-                   week_start = 1)
+                   week_start = 1))
   )
 ```
 
@@ -146,7 +147,7 @@ formulas <-
     
     # Structural form: Price
     price ~ 
-      magazine_level + temperature + wind_production + as.factor(year) + as.factor(month) + as.factor(weekday)
+      magazine_level + temperature + wind_production + year + month + weekday
     
     # Reduced form: Price
     #volume ~ 
@@ -178,8 +179,73 @@ for (i in 1:length(formulas)) {
 # Create regression tables
 stargazer(reg_list, 
           type = "text",
-          dep.var.labels = c("volume", "price"),
+          dep.var.labels = c("volume"),
           
           # Omit all the dummies to make regression table more readable
           keep = c("price", "temperature", "wind_production", "magazine_level", "Constant"))
 ```
+
+```{r}
+# First stage
+first_stage <- lm(
+  price ~ magazine_level + temperature + wind_production + year + month + weekday,
+  data = df
+)
+
+# Reduced form
+reduced_form <- lm(
+  volume ~ magazine_level + temperature + wind_production + year + month + weekday,
+  data = df
+)
+
+# IV/2SLS 
+iv_model <- ivreg(
+  volume ~ price + temperature + year + month + weekday 
+  | magazine_level + temperature + wind_production + year + month + weekday, 
+  data = df
+)
+
+# OLS
+ols_model <- lm(
+  volume ~ price + temperature + year + month + weekday,
+  data = df
+)
+```
+
+```{r}
+# Regression table for first stage, reduced form and OLS
+stargazer(
+  title = "First stage, reduced form and OLS",
+  first_stage,
+  reduced_form,
+  ols_model,
+  type = "text",
+  omit = c("year", "month", "weekday")
+)
+```
+
+```{r}
+# Regression table for IV/2SLS
+stargazer(
+  title = "IV/2SLS",
+  iv_model,
+  type = "text",
+  omit = c("year", "month", "weekday")
+)
+```
+
+```{r}
+# Test
+stargazer(
+  first_stage,
+  reduced_form,
+  iv_model,
+  ols_model,
+  type = "text",
+  omit = c("year", "month", "weekday")
+)
+```
+
+
+
+
