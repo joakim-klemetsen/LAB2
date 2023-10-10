@@ -189,7 +189,9 @@ stargazer(
 ```
 
 ```{r}
-# Regression table of all regression
+# Regression table of all regression.
+# Omitting statistics to make the table more readable.
+# Note! Scaling of variables 'volume' and 'wind_production' of 10^-3
 stargazer(
   first_stage,
   reduced_form,
