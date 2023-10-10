@@ -170,7 +170,7 @@ ols_model <- lm(
 )
 ```
 
-With the regressions at hand, we were able to create one table showing the results of the first stage, reduced form, IV/2SLS and OLS regressions. To make the table more readable, we omitted all the dummies and regression statistics from the table. 
+With the regressions at hand, we were able to create one table showing the results of the first stage, reduced form, IV/2SLS and OLS regressions. To make the table more readable, we omitted all the dummies and regression statistics from the table.
 
 ```{r}
 # Regression table of all regression.
@@ -189,14 +189,16 @@ stargazer(
   dep.var.caption = "First stage (1) | Reduced form (2) | IV/2SLS (3) |OLS (4)"
 )
 ```
-Inspecting our results, we had a couple of observations we wanted to comment on. Firstly, all included variables had statistically significant coefficients (p < 0.01). In the first stage regression, we notice that the standard errors of the coefficients are small, which can be interpreted that the included variables(especially magazine level and temperature due to the size of the coefficients) might be robust predictors of the endogenous variable, price. However, all unit increases of the variables lowers the price in the model.
+
+Firstly, all included variables had statistically significant coefficients (p \< 0.01). In the first stage regression, we notice that the standard errors of the coefficients are small, which can be interpreted that the included variables(especially magazine level and temperature due to the size of the coefficients) might be robust predictors of the endogenous variable, price. However, all unit increases of the variables lowers the price in the model.
 
 The results of the reduced form regression indicated that in our model, all instruments and other exogenous variables together predict demanded quantity (volume). We take particular notice of the relatively large coefficient of the temperature variable, suggesting the large negative demand impact of increased temperature.
 
 Comparing the IV/2SLS and the OLS regression, we notice that the respective size of the coefficients is similar but with substantial differences in the corresponding standard errors. This might be due to the fact that when addressing potential endogenity with IV estimation, price has a larger effect on quantity demanded (volume) than what is captured through OLS. This is highlighting the potential bias in the OLS regression.
 
-
 ## Task E. Commenting on the first stage
+
+In the previous task, we already made some short comments on the first stage regression. However, to comment further we can include the regression statistics to enable an assessment of instrument strength.
 
 ```{r}
 # Regression table for first stage, including stats
@@ -208,7 +210,11 @@ stargazer(
 )
 ```
 
+To assess the strength of instruments, one typically analyse the F-statistic of the regression. A general rule of thumb is that an F-statistic above 10 in the first stage regression indicates sufficiently strong instrument. The F-statistic of 246.224 is well above this threshold, indicating that magazine levels (M~t~ ) is a good instrument - meaning that it explains a lot of the variation in price (P~t~ ). Moreover, a Goodness of Fit (R^2^ ) of 71.7% implies that the model explains a lot of the variability in price. On should in general not use the R^2^ as an indicator as a validation of good instruments, but seen in combination with the F-statistic it at the minimum suggests that M~t~ is a strong instrument.
+
 ## Task F. Commenting on the reduced form
+
+Previously, we commented on the first stage regression. Before comparing the first stage and reduced form regressing, we include to regression table of the latter to make supplement the comments made in task D.
 
 ```{r}
 # Regression table for reduced form, including stats
@@ -219,5 +225,11 @@ stargazer(
   omit = c("year", "month", "weekday")
 )
 ```
+
+Most notably, the F-static is statistically high (p \< 0.01) and equals 1,627.381. This result suggests that the variables included in the regression jointly have a significant effect on the quantify demanded. Furthermore, the Goodness of Fit is exceptionally high at 94.4%. If we were to trust this result, it suggests that the model explains almost all the variation in quantity demanded. However, such a result might be an indicator of potential data leaking or overfitting, possibilities that we decided just to comment and not investigate further.
+
+When comparing the first stage and the reduced form regression we systematically compared the coefficients. Regarding magazine level, in the first stage regression an increase is associated with a decrease in price. In the reduced form regression however, the association is the other way around. The objective of performing these two separate regressions is to consider magazine levels as an instrument, because it is believed related to price but not quantity demanded directly. Such a relationship might be plausible, as dropping magazine levels might cause the prices to rise, resulting in a drop in the quantity demanded. This relationships is also plausible the other way around, as rising magazine levels might reduce the price, causing the demand to increase. This suggested relationship should be analysed further with the help of statistical tests (which we will not do here).
+
+We notice that the coefficients of temperature and wind production suggests that increases is associated with decreases in the dependent variables. By using the correlations identified in Figure 1, these relationships might be plausible. However, as with magazine levels, further discussions of the relationships should be backed up by statistical tests.
 
 ## Task G. Application of the IV/2SLS estimates
