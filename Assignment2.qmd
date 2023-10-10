@@ -168,6 +168,7 @@ ols_model <- lm(
 # Note! Scaling of variables 'volume' and 'wind_production' of 10^-3, and 
 # that all dummies is omitted from the regression table.
 stargazer(
+  title = "Table including all regressions",
   first_stage,
   reduced_form,
   iv_model,
