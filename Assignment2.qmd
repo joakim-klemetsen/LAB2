@@ -175,7 +175,8 @@ stargazer(
   ols_model,
   type = "text",
   omit = c("year", "month", "weekday"),
-  omit.table.layout = "sn"
+  omit.table.layout = "sn",
+  dep.var.caption = "First stage (1) | Reduced form (2) | IV/2SLS (3) |OLS (4)"
 )
 ```
 
