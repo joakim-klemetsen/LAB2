@@ -131,61 +131,8 @@ df <-
 ```
 
 ```{r}
-# Define formulas to apply in the regressions
-formulas <- 
-  list(
-    
-    # Structural form: Demand
-    volume ~ 
-      price + temperature + as.factor(year) + as.factor(month) + as.factor(weekday),
-    
-    # Reduced form: Demand
-    #volume ~ 
-      #price
-    
-    # First stage: Demand
-    
-    # Structural form: Price
-    price ~ 
-      magazine_level + temperature + wind_production + year + month + weekday
-    
-    # Reduced form: Price
-    #volume ~ 
-      #price
-    
-    # First stage: Price
-    
-  )
-```
+# Perform specified regressions
 
-```{r}
-# Perform regressions for all the specified formulas
-
-# Empty reg list
-reg_list <- list()
-
-# Loop over all formulas
-for (i in 1:length(formulas)) {
-  
-  # Perform regression with specified formula
-  reg <- lm(formulas[[i]], df)
-  
-  # Save the regression
-  reg_list[[i]] <- reg
-}
-```
-
-```{r}
-# Create regression tables
-stargazer(reg_list, 
-          type = "text",
-          dep.var.labels = c("volume"),
-          
-          # Omit all the dummies to make regression table more readable
-          keep = c("price", "temperature", "wind_production", "magazine_level", "Constant"))
-```
-
-```{r}
 # First stage
 first_stage <- lm(
   price ~ magazine_level + temperature + wind_production + year + month + weekday,
@@ -213,6 +160,8 @@ ols_model <- lm(
 ```
 
 ```{r}
+#| echo: false
+#| output: false
 # Regression table for first stage, reduced form and OLS
 stargazer(
   title = "First stage, reduced form and OLS",
@@ -225,6 +174,9 @@ stargazer(
 ```
 
 ```{r}
+#| echo: false
+#| output: false
+
 # Regression table for IV/2SLS
 stargazer(
   title = "IV/2SLS",
@@ -235,14 +187,15 @@ stargazer(
 ```
 
 ```{r}
-# Test
+# Regression table of all regression
 stargazer(
   first_stage,
   reduced_form,
   iv_model,
   ols_model,
   type = "text",
-  omit = c("year", "month", "weekday")
+  omit = c("year", "month", "weekday"),
+  omit.table.layout = "sn"
 )
 ```
 
