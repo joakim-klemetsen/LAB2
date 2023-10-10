@@ -25,6 +25,8 @@ df <- read_csv("elmarket_13_19.csv")
 
 ## Task A. Plotting monthly averages of temparature, volume, price and wind production.
 
+To discuss the relationships between temperature, volume, price and wind power production we chose The variables in the data set have vastly different scales. To surpass this issue when comparing the specified variables and in discussing their relationship, we chose to scale the values of the monthly averages. We chose to only included the last year of the sample, to make the plot more readable.
+
 ```{r}
 # Create a data frame of monthly averages of the variables volume, price, 
 # temperature and wind_production in long format.
@@ -44,10 +46,12 @@ df_avg_long <-
       avg_wind = mean(wind_production, na.rm = TRUE)
     ) %>% 
     
-    # Scale the values of volume and wind to make the plot readable
+    # Scale the values 
     mutate(
-      avg_vol = avg_vol / 10^5, 
-      avg_wind = avg_wind / 10^3
+      avg_vol = scale(avg_vol), 
+      avg_wind = scale(avg_wind),
+      avg_temp = scale(avg_temp),
+      avg_price = scale(avg_price)
     ) %>% 
     
     # Pivot to long format
@@ -63,6 +67,8 @@ df_avg_long <-
 #| fig-cap: Monthly averages of temperature, volume, price and wind power production. The values have been scaled to fit into a single plot. 
 # Plot the specified variables
 df_avg_long %>% 
+  arrange(year_month) %>% 
+  tail(60) %>% 
   ggplot(
     aes(
       x = year_month,
@@ -72,13 +78,12 @@ df_avg_long %>%
   ) +
   geom_line() +
   labs(
-    x = "",
-    y = ""
+    title = "Relationship between variables",
+    x = "Months",
+    y = "Scaled values"
   ) +
   theme_classic()
 ```
-
-To discuss the relationships between temperature, volume, price and wind power production we chose The variables in the data set have vastly different scales. To surpass this issue when comparing the specified variables and in discussing their relationship, we chose to scale the values of the monthly averages of volume and wind power production by dividing their values of factors of 10\^5 and 10\^4 respectively.
 
 We notice large seasonal variations in all variables. Especially in average temperatures and volume there is little variation between each year. The monthly average price had a dip in the summer of 2015, but increased steadily up until the Covid19-pandemic in the spring of 2019. The wind power production have strong seasonal variations, but we notice that the average wind production has increased over the period by a large margin.
 
@@ -114,7 +119,9 @@ When choosing a instrument for price when estimating demand, it's important to c
 
 4.  **How could controlling for weekday and year be useful?** Incorporating controls for weekday and year is beneficial to justify for demand patterns variation. Weekdays and weekends usually give different demand profiles given the consumers consumption. Meanwhile years would capture trends that are long-term and macroeconomic affects on demand. These controls strengthen the accuracy of demand estimates, while taking into account sources of variation unrelated to price.
 
-## D. Performing OLS regressions
+## Task D. Performing OLS regressions
+
+With basis in the supplied equations, we sat out to perform a set of regressions. First we had to rescale some of the data to make the results more readable. We chose to divide the variables for volume and wind power production by 1,000. We also added variables to the data containing the year, month and weekday for each observation (or row).
 
 ```{r}
 # Create new variables in data frame containing the dummies for
@@ -131,6 +138,8 @@ df_new <-
                    week_start = 1))
   )
 ```
+
+With our new data set, we were able to perform four regression, the first stage, reduced form, IV/2SLS and OLS. In the first stage regression we regressed P~t~ on all the exogenous variables from both the basis equations. For the reduced form regression, we regressed Q~t~^D^ on all the exogenous variables from both equations as well. In the OLS regression, we estimated the main equation without considering endogeneity. Lastly, in the IV/2SLS regression, we used a two-stage procedure to predict the values of an endogenous explanatory variable using instrumental variables, and then used those predicted values to estimate the impact on the dependent variable.
 
 ```{r}
 # Perform specified regressions
@@ -161,6 +170,7 @@ ols_model <- lm(
 )
 ```
 
+With the regressions at hand, we were able to create one table showing the results of the first stage, reduced form, IV/2SLS and OLS regressions. To make the table more readable, we omitted all the dummies and regression statistics from the table. 
 
 ```{r}
 # Regression table of all regression.
@@ -179,18 +189,15 @@ stargazer(
   dep.var.caption = "First stage (1) | Reduced form (2) | IV/2SLS (3) |OLS (4)"
 )
 ```
+Inspecting our results, we had a couple of observations we wanted to comment on. Firstly, all included variables had statistically significant coefficients (p < 0.01). In the first stage regression, we notice that the standard errors of the coefficients are small, which can be interpreted that the included variables(especially magazine level and temperature due to the size of the coefficients) might be robust predictors of the endogenous variable, price. However, all unit increases of the variables lowers the price in the model.
 
-```{r}
-# Regression table for IV/2SLS, including stats
-stargazer(
-  title = "IV/2SLS",
-  iv_model,
-  type = "text",
-  omit = c("year", "month", "weekday")
-)
-```
+The results of the reduced form regression indicated that in our model, all instruments and other exogenous variables together predict demanded quantity (volume). We take particular notice of the relatively large coefficient of the temperature variable, suggesting the large negative demand impact of increased temperature.
 
-## E. Commenting on the first stage
+Comparing the IV/2SLS and the OLS regression, we notice that the respective size of the coefficients is similar but with substantial differences in the corresponding standard errors. This might be due to the fact that when addressing potential endogenity with IV estimation, price has a larger effect on quantity demanded (volume) than what is captured through OLS. This is highlighting the potential bias in the OLS regression.
+
+
+## Task E. Commenting on the first stage
+
 ```{r}
 # Regression table for first stage, including stats
 stargazer(
@@ -201,7 +208,7 @@ stargazer(
 )
 ```
 
-## F. Commenting on the reduced form
+## Task F. Commenting on the reduced form
 
 ```{r}
 # Regression table for reduced form, including stats
@@ -213,6 +220,4 @@ stargazer(
 )
 ```
 
-## G. Application of the IV/2SLS estimates
-
-
+## Task G. Application of the IV/2SLS estimates
