@@ -189,5 +189,29 @@ stargazer(
 )
 ```
 
+## E. Commenting on the first stage
+```{r}
+# Regression table for first stage, including stats
+stargazer(
+  title = "First stage",
+  first_stage,
+  type = "text",
+  omit = c("year", "month", "weekday")
+)
+```
+
+## F. Commenting on the reduced form
+
+```{r}
+# Regression table for reduced form, including stats
+stargazer(
+  title = "Reduced form",
+  reduced_form,
+  type = "text",
+  omit = c("year", "month", "weekday")
+)
+```
+
+## G. Application of the IV/2SLS estimates
 
 
