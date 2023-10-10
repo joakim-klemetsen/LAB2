@@ -161,37 +161,12 @@ ols_model <- lm(
 )
 ```
 
-```{r}
-#| echo: false
-#| output: false
-# Regression table for first stage, reduced form and OLS
-stargazer(
-  title = "First stage, reduced form and OLS",
-  first_stage,
-  reduced_form,
-  ols_model,
-  type = "text",
-  omit = c("year", "month", "weekday")
-)
-```
-
-```{r}
-#| echo: false
-#| output: false
-
-# Regression table for IV/2SLS
-stargazer(
-  title = "IV/2SLS",
-  iv_model,
-  type = "text",
-  omit = c("year", "month", "weekday")
-)
-```
 
 ```{r}
 # Regression table of all regression.
 # Omitting statistics to make the table more readable.
-# Note! Scaling of variables 'volume' and 'wind_production' of 10^-3
+# Note! Scaling of variables 'volume' and 'wind_production' of 10^-3, and 
+# that all dummies is omitted from the regression table.
 stargazer(
   first_stage,
   reduced_form,
@@ -203,6 +178,15 @@ stargazer(
 )
 ```
 
+```{r}
+# Regression table for IV/2SLS, including stats
+stargazer(
+  title = "IV/2SLS",
+  iv_model,
+  type = "text",
+  omit = c("year", "month", "weekday")
+)
+```
 
 
 
