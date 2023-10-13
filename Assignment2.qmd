@@ -3,7 +3,6 @@ title: "Assignment 2"
 format: pdf
 editor: visual
 ---
-
 ```{r}
 #| echo: false
 #| output: false
@@ -13,19 +12,15 @@ library(lubridate)  # for date/time manipulation
 library(stargazer)  # regression tables
 library(AER)        # IV/2SLS regression
 ```
-
 ```{r}
 #| echo: false
 #| output: false
 # Loading in the data
 df <- read_csv("elmarket_13_19.csv")
 ```
-
-# Assignment 2
-
 ## Task A. Plotting monthly averages of temparature, volume, price and wind production.
 
-To discuss the relationships between temperature, volume, price and wind power production we chose The variables in the data set have vastly different scales. To surpass this issue when comparing the specified variables and in discussing their relationship, we chose to scale the values of the monthly averages. We chose to only included the last year of the sample, to make the plot more readable.
+We looked at the relationships between temperature, volume, price, and wind power production. These variables have different scales, so we scaled their monthly averages to compare them better. We focused on the last year of the sample to keep the plot easy to read.
 
 ```{r}
 # Create a data frame of monthly averages of the variables volume, price, 
@@ -61,10 +56,7 @@ df_avg_long <-
       values_to = "scaled values"
     )
 ```
-
 ```{r}
-#| label: variable_plot
-#| fig-cap: Monthly averages of temperature, volume, price and wind power production. The values have been scaled to fit into a single plot. 
 # Plot the specified variables
 df_avg_long %>% 
   arrange(year_month) %>% 
@@ -84,44 +76,34 @@ df_avg_long %>%
   ) +
   theme_classic()
 ```
+Upon examining the provided plot, a few notable patterns and relationships emerge. Firstly, we notice a strong inverse relationship between average temperature and volume. As the temperature dips, notably around January and then again toward the end of the year, there's a noticeable rise in volume, suggesting that colder months might drive up the demand for energy. This is reinforced by the trend of wind power production. Wind production seems to rise during periods of colder temperatures, which could indicate that colder months are, in general, windier.
 
-We notice large seasonal variations in all variables. Especially in average temperatures and volume there is little variation between each year. The monthly average price had a dip in the summer of 2015, but increased steadily up until the Covid19-pandemic in the spring of 2019. The wind power production have strong seasonal variations, but we notice that the average wind production has increased over the period by a large margin.
+In terms of pricing, there's a clear spike around April. This might be influenced by multiple factors, but its correlation with the other variables at that specific time is less direct. While volume and temperature show a consistent inverse relationship, the relationship between price and other variables is less linear, suggesting that other external factors might play a role in influencing the price.
 
-When analyzing the relationship between the variables, we noticed what is likely a negative correlation between temperature and volume. This seems likely as the temperature decreases the demand for energy increases. Also we notice the negative correlation between wind production and temperature. This is likely due to the fact that the colder periods like winter and autumn is more windy. Lastly, we notice the positive correlation between volume and price. This is likely because in periods of high demand, the supply of energy is strained resulting in a higher price for electric energy.
-
-There is likely more relationships between the variables that can be identified and discussed using the plot we have provided. We chose to only comment on the most apparent of the relationships at this point.
+The relationships highlighted here offer valuable insights, but a deeper analysis of the data and potential external influences will likely provide a more comprehensive understanding.
 
 ## Task B. Why will a OLS regression on quantity not provide an estimate of demand?
-
-An OLS regression of quantity on price alone, even with controls, is not fitted to estimate demand due to many reasons:
-
-1.  Endogeneity exists as price and quantity in markets are simultaneously determined
-
-2.  Omitted variables like for example consumer income, advertising and seasonality. These can affect and lead to omitted variable bias.
-
-3.  Measurement errors in price and quantity can contribute to bias for the estimates for the parameters
-
-4.  OLS (or Gauss-Markow theorem) assumes a linear relationship. This may not hold if the demand curves are nonlinear.
-
-5.  Heteroskedasticity which is variability in the error term given any explanatory variable. In this case the variability in quantity varies across price levels which in return can affect standard erros.
-
-6.  The demand's dynamic behavior and seasonality may not be sufficiently captured. To estimate demand accurately, more advanced econometric methods are often required. These advanced methods usually contain instrumental variable regression and structural equation modelling. Controlling for relevant factors and improve our data quality can also make the estimation precision better.
+Using an OLS regression on quantity with price as the only predictor isn't good enough to accurately estimate demand, even with added controls. There's a problem with endogeneity because price and quantity in markets are decided at the same time. Also, important variables like consumer income, advertising, and seasonality might be left out, which can introduce bias. Mistakes in measuring price or quantity can also affect the accuracy of our results. The OLS method assumes a straight line relationship between variables, but if the demand curves aren't straight lines, this becomes an issue. Another concern is heteroskedasticity, where the variability of the error changes with different price levels, affecting the reliability of standard errors. The changing behavior of demand and its seasonality might not be fully captured by OLS. To get a more detailed and accurate picture of demand, methods like instrumental variable regression are often better. Improving data quality and including controls for relevant factors can also make our estimates more precise.
 
 ## Task C. Considering choice of instrument for price when estimating demand
+When picking an instrument for price in estimating demand, the instrument's validity is crucial. Valid instruments should be relevant, exogenous (not linked to unobserved factors), and shouldn't directly affect the dependent variable.
 
-When choosing a instrument for price when estimating demand, it's important to consider the validity of the instrument in terms of the requirements for a valid instrument. These requirements can be relevance, exogeneity, and exclusion restrictions:
+### Is temperature a valid instrument for price in estimating demand?
+Using temperature as an instrument for price could be problematic. Temperature often changes with factors that can also influence demand, like the time of year or consumer habits. If temperature is connected with unseen demand shifts, it's not a valid choice because of these links.
 
-1.  **Why is temperature not a valid instrument for price when estimating demand?** The key requirements for exogeneity may not be satisfied if one were to use temperature as an instrument for price when estimating demand. (Exogeneity refers to the condition in which an independent variable is unrelated to the error term, indicating that it is not influenced by unobserved factors in the model.) Temperature is usually affected by factors that also may affect demand, like seasonality and consumber behavior. The instrument would not be valid due to endogeneity concerns if temperature is correlated with unobservable demand shocks.
+### Could magazine levels and wind power production be good price instruments when estimating demand?
+Both magazine levels and wind power production might be effective instruments for price. They need to influence the price and remain exogenous, meaning they shouldn't be linked with unseen factors affecting demand. It's essential to carefully assess their exogeneity by testing if they're associated with other unobserved variables.
 
-2.  **Why can magazine levels (or deviations) and wind power production potentially be good instruments for price when estimating demand?** Magazine levels and wind power production could potentially be sufficient instruments for price as they can fulfil the requirements for a valid instrument. They should be relevant in other terms they should be affecting the price. In addition, they should be exogenous, meaning that they should not be correlated with unobservable factors. But establishing their exogeneity requires thoughtful consideration and testing.
+### Why do we need to adjust for seasonality and temperature?
+Adjusting for the time of year and temperature ensures our demand estimates are more accurate. The time of year can cause regular shifts in demand not related to price, while temperature can change demand directly. By adjusting for these, we're making sure other factors aren't distorting our demand estimates.
 
-3.  **Why is it necessary to control for seasonality (say, calendar month) and temperature?** It is necessary to control for seasonality and temperature to avoid omitted variable bias. (Omitted variable bias appear if a relevant variable that affects the dependent variable is excluded in a regression model. This leads to biased and estimates of the coefficients of the variables that are included.) Seasonality captures variation in the systematic demand throughout the year unrelated to price. Meanwhile temperature affects demand independently. When we control for these factors, we ensure precise demand estimates.
+### How can adjusting for weekday and year help?
+Including weekday and year adjustments can account for different demand patterns. For instance, demand might differ on weekdays compared to weekends. Adjusting for year can capture larger trends or bigger economic impacts on demand. By including these adjustments, we get a clearer picture of demand that's not clouded by these other factors.
 
-4.  **How could controlling for weekday and year be useful?** Incorporating controls for weekday and year is beneficial to justify for demand patterns variation. Weekdays and weekends usually give different demand profiles given the consumers consumption. Meanwhile years would capture trends that are long-term and macroeconomic affects on demand. These controls strengthen the accuracy of demand estimates, while taking into account sources of variation unrelated to price.
+## Task D. Providing a table of regression results
+Using the provided equations, we conducted several regression analyses. To enhance clarity, we rescaled some of the data, particularly dividing volume and wind power production by 1,000. We also added variables to our dataset indicating the year, month, and weekday for each observation.
 
-## Task D. Performing OLS regressions
-
-With basis in the supplied equations, we sat out to perform a set of regressions. First we had to rescale some of the data to make the results more readable. We chose to divide the variables for volume and wind power production by 1,000. We also added variables to the data containing the year, month and weekday for each observation (or row).
+We chose to present a table of all regression result, but for enhanced clarity we omitted dummies for year, month and day i all regressions, and the regression statistics as they will not be of value to the following discussion.
 
 ```{r}
 # Create new variables in data frame containing the dummies for
@@ -138,9 +120,6 @@ df_new <-
                    week_start = 1))
   )
 ```
-
-With our new data set, we were able to perform four regression, the first stage, reduced form, IV/2SLS and OLS. In the first stage regression we regressed P~t~ on all the exogenous variables from both the basis equations. For the reduced form regression, we regressed Q~t~^D^ on all the exogenous variables from both equations as well. In the OLS regression, we estimated the main equation without considering endogeneity. Lastly, in the IV/2SLS regression, we used a two-stage procedure to predict the values of an endogenous explanatory variable using instrumental variables, and then used those predicted values to estimate the impact on the dependent variable.
-
 ```{r}
 # Perform specified regressions
 
@@ -169,9 +148,6 @@ ols_model <- lm(
   data = df_new
 )
 ```
-
-With the regressions at hand, we were able to create one table showing the results of the first stage, reduced form, IV/2SLS and OLS regressions. To make the table more readable, we omitted all the dummies and regression statistics from the table.
-
 ```{r}
 # Regression table of all regression.
 # Omitting statistics to make the table more readable.
@@ -189,17 +165,27 @@ stargazer(
   dep.var.caption = "First stage (1) | Reduced form (2) | IV/2SLS (3) |OLS (4)"
 )
 ```
+With basis in the results above, we will take a closer look at the OLS and IV/2SLS regressions, provide a short description of their purpose and our findings, and a comparison of the two models.
 
-Firstly, all included variables had statistically significant coefficients (p \< 0.01). In the first stage regression, we notice that the standard errors of the coefficients are small, which can be interpreted that the included variables(especially magazine level and temperature due to the size of the coefficients) might be robust predictors of the endogenous variable, price. However, all unit increases of the variables lowers the price in the model.
+### OLS regression
+The Ordinary Least Squares (OLS) regression serves as our benchmark to determine the level of bias introduced by endogeneity. Endogeneity, which arises when an independent variable correlates with the error term, can skew results, leading to biased or unreliable estimates.
 
-The results of the reduced form regression indicated that in our model, all instruments and other exogenous variables together predict demanded quantity (volume). We take particular notice of the relatively large coefficient of the temperature variable, suggesting the large negative demand impact of increased temperature.
+For the OLS regression, coefficients for price and temperature are 1.173 and -12.341 respectively. The accompanying error terms are small and positive, suggesting that our model fits the data well for the variables chosen.
 
-Comparing the IV/2SLS and the OLS regression, we notice that the respective size of the coefficients is similar but with substantial differences in the corresponding standard errors. This might be due to the fact that when addressing potential endogenity with IV estimation, price has a larger effect on quantity demanded (volume) than what is captured through OLS. This is highlighting the potential bias in the OLS regression.
+### IV/2SLS regression
+The Instrumental Variable/Two-Stage Least Squares (IV/2SLS) regression aims to estimate the demand for electricity in the power market while accounting for endogeneity. The model's foundation lies in the first stage and reduced form regressions.
 
-## Task E. Commenting on the first stage
+In the IV/2SLS model, with volume as the dependent variable, both price and temperature coefficients are statistically significant at the 1% level. Their values are 1.831 and -12.036 respectively. Interestingly, an increase in price corresponds to an increase in volume, a trend that might be influenced by limited supply during peak demand months due to magazine levels.
 
-In the previous task, we already made some short comments on the first stage regression. However, to comment further we can include the regression statistics to enable an assessment of instrument strength.
+### Comparison of the two models
+When comparing the IV/2SLS model to the OLS benchmark, there are slight variations in the coefficients. For instance, the price coefficient in IV/2SLS is 1.831, while in OLS it's 1.173. Bigger price changes could highlight these differences even more, showing the importance of using both models in various situations.
 
+While the OLS model provides a good starting point, the IV/2SLS model offers deeper insights by addressing potential endogeneity concerns. The observed differences in the coefficients between the two models highlight the importance of considering both techniques, especially in an economic context where even small variations can have large implications.
+
+## Task E. Commenting on the first stage regression
+The first stage regression is designed to address endogeneity by identifying instrumental variables that are correlated to the endogenous variable but is uncorrelated with the error term. This process helps to ensure consistent and unbiased parameter estimates. 
+
+In this stage, we examine the relationship between several instruments, namely magazine levels, temperature, and wind production, and the variable we aim to instrument, which is the electricity price.
 ```{r}
 # Regression table for first stage, including stats
 stargazer(
@@ -209,13 +195,16 @@ stargazer(
   omit = c("year", "month", "weekday")
 )
 ```
+The coefficients associated with magazine levels, temperatures, and wind production are -0.380, -0.321, and -0.035 respectively. All of these coefficients are negative and statistically significant at the 1% level. This suggests that as these variables increase, the price of electricity (the dependent variable) tends to decrease. Additionally, the error terms for these coefficients are small and positive. 
 
-To assess the strength of instruments, one typically analyse the F-statistic of the regression. A general rule of thumb is that an F-statistic above 10 in the first stage regression indicates sufficiently strong instrument. The F-statistic of 246.224 is well above this threshold, indicating that magazine levels (M~t~ ) is a good instrument - meaning that it explains a lot of the variation in price (P~t~ ). Moreover, a Goodness of Fit (R^2^ ) of 71.7% implies that the model explains a lot of the variability in price. On should in general not use the R^2^ as an indicator as a validation of good instruments, but seen in combination with the F-statistic it at the minimum suggests that M~t~ is a strong instrument.
+The negative relationship between magazine levels and price introduced above is intuitive: when magazine levels are high, it typically indicates a supply of electricity greater than the demand. Furthermore, during colder months, inflows to the magazines are reduced, which can lead to higher electricity prices due to diminished supply.
+
+Similarly, it is logical for the electricity price to decrease with rising temperatures, as warmer conditions reduce the need for heating in homes and buildings. This inverse relationship is evident in the plot (see task A), which shows the average volume (depicted in blue) and average temperature (shown in green) displaying opposite trends across months.
+
+Lastly, wind production, which can vary seasonally and often peaks during winter months, exhibits a mild correlation with magazine levels, a trend also visible in the plot (task A). The influence of these instruments on the price of electricity aligns well with economic reasoning.
 
 ## Task F. Commenting on the reduced form
-
-Previously, we commented on the first stage regression. Before comparing the first stage and reduced form regressing, we include to regression table of the latter to make supplement the comments made in task D.
-
+We substituted the endogenous variable, electricity demand at time *t*, with the instruments in our reduced form regression. This regression took volume as the dependent variable, using magazine level, temperature, and wind production as the independent variables.
 ```{r}
 # Regression table for reduced form, including stats
 stargazer(
@@ -225,11 +214,23 @@ stargazer(
   omit = c("year", "month", "weekday")
 )
 ```
+In the table of regression results all coefficients were significant at the 1% level, and error terms were consistently small and positive. We noticed a very high goodness-of-fit at 94.4%. Despite this result indicating that out model fit the data really well, such a high goodness-of-fit raises suspicion of potential data loss or other errors in the estimation.
 
-Most notably, the F-static is statistically high (p \< 0.01) and equals 1,627.381. This result suggests that the variables included in the regression jointly have a significant effect on the quantify demanded. Furthermore, the Goodness of Fit is exceptionally high at 94.4%. If we were to trust this result, it suggests that the model explains almost all the variation in quantity demanded. However, such a result might be an indicator of potential data leaking or overfitting, possibilities that we decided just to comment and not investigate further.
+F-statistic was statistically significant 1% level giving a value of 1627.381 which is very high. This implies that the variables included in the model are jointly statistically significant on the on demanded quantity.
 
-When comparing the first stage and the reduced form regression we systematically compared the coefficients. Regarding magazine level, in the first stage regression an increase is associated with a decrease in price. In the reduced form regression however, the association is the other way around. The objective of performing these two separate regressions is to consider magazine levels as an instrument, because it is believed related to price but not quantity demanded directly. Such a relationship might be plausible, as dropping magazine levels might cause the prices to rise, resulting in a drop in the quantity demanded. This relationships is also plausible the other way around, as rising magazine levels might reduce the price, causing the demand to increase. This suggested relationship should be analysed further with the help of statistical tests (which we will not do here).
-
-We notice that the coefficients of temperature and wind production suggests that increases is associated with decreases in the dependent variables. By using the correlations identified in Figure 1, these relationships might be plausible. However, as with magazine levels, further discussions of the relationships should be backed up by statistical tests.
+Lastly, we investigated whether the coefficients from the first stage and the reduced form were as we expected based on the discussion earlier about instrument validity (see task C for clarity). We observed a simultaneity endogeneity issue. Price and volume can influence each other, questioning the validity of the instruments. For instance, a price increase due to electricity market changes would reduce consumption. Conversely, changes in volume can affect the price.
 
 ## Task G. Application of the IV/2SLS estimates
+Applying our estimates of the coefficient for price in our IV/2SLS regression (the structural form) of 1.831, a permanent increase in electricity prices of 10 EUR / MWh would suggest an increase in the dependent value, volume, og 18.831 units. Remember that before performing the regression, we divided the volume variable by 1,000, thus one unit of the variable volume is equivalent to 1,000 MWh. Therefore, our estimated model suggests that a permanent increase in electricity prices of 10 EUR / MWh is expected to increase the volume by 18,310 MWh.
+
+Our results is rather surprising at first glance. Standard economic theory suggests that an increase in prices usually reduces the demand. However, the source of this not being true in this case is the problems of endogeneity as discussed earlier. In our data, volume and price is related (as seen in task A), but this relationship can't be interpreted as a causal one where increased price causes increased volume (demand). This can be anchored in the results of the first stage and reduced form regressions where factors like reduced magazine levels might cause the price to increase because of limitations in supply, and reduced temperatures might cause the demand for electricity to increase due to need for heating of houses etc.  
+
+### Potential factors that makes our estimates less suited in this scenario
+There are several factors that could be discussed here. One factor that makes these estimates less suited for estimating volume is the endogeneity problem caused by simultaneity. Simultaneity in this case would mean that price could affect demand, and demand could affect price. Consumer behaviour is also not considered as mentioned earlier in the discussion.  
+
+Another factor that could potentially make these estimates less valid, is the change of weather patterns due to global warming. In our model, factors that could change and have impact on the instruments/coefficients could be changing rainfall patterns, ocean circulation changes, rising temperatures, intensified storms and so on. These examples could be the unobserved effects that affect the dependent variables volume or price directly, or indirectly through independent variables such as magazine levels, temperature, and wind production on a long-term basis. 
+
+We could also mention other factors such as nonlinearity, lagged effects, and market expectations/ dynamics. These effects show weakness with the IV/2SLS model, where it is based on a linear model and is not effective enough in capturing these effects on our regression model. Market relationships and market dynamics considers longer term changes in expectations and capacity, which will not be captured by the model, as it lacks being dynamic. Again, we believe the model is effective in making assumptions for short-term fluctuations, but long-term fluctuations may differ.  
+
+
+

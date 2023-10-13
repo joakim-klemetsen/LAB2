@@ -94,223 +94,347 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="loading-in-the-required-packages-and-data-to-be-used-to-answer-the-problems." class="level2">
-<h2 class="anchored" data-anchor-id="loading-in-the-required-packages-and-data-to-be-used-to-answer-the-problems.">Loading in the required packages and data to be used to answer the problems.</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading required packages.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  <span class="co"># loads ggplot2, dplyr, readr</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.2     ✔ readr     2.1.4
-✔ forcats   1.0.0     ✔ stringr   1.5.0
-✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-✔ purrr     1.0.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)  <span class="co"># for date/time manipulation</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)  <span class="co"># to combine plots into a single plot</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading in the data</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"elmarket_13_19.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 2556 Columns: 21
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-dbl  (20): volume, wind_production, price, temperature, precip, windspeed, m...
-date  (1): date
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-</div>
-</section>
-<section id="assignment-2" class="level2">
-<h2 class="anchored" data-anchor-id="assignment-2">Assignment 2</h2>
-</section>
+<section id="assignment-2" class="level1">
+<h1>Assignment 2</h1>
 <section id="task-a.-plotting-monthly-averages-of-temparature-volume-price-and-wind-production." class="level2">
 <h2 class="anchored" data-anchor-id="task-a.-plotting-monthly-averages-of-temparature-volume-price-and-wind-production.">Task A. Plotting monthly averages of temparature, volume, price and wind production.</h2>
+<p>We looked at the relationships between temperature, volume, price, and wind power production. These variables have different scales, so we scaled their monthly averages to compare them better. We focused on the last year of the sample to keep the plot easy to read.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a function that plots the average monthly data of a specified variable.</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>plot_avg_monthly <span class="ot">&lt;-</span> <span class="cf">function</span>(data, variable) {</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the specified variable is valid</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (variable <span class="sc">%in%</span> <span class="fu">names</span>(data)) {</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract year and month, calculate the average per month</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    avg_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">year_month =</span> <span class="fu">floor_date</span>(date, <span class="st">"month"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(year_month) <span class="sc">%&gt;%</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="at">avg_var =</span> <span class="fu">mean</span>(<span class="fu">get</span>(variable), <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(avg_data, <span class="fu">aes</span>(<span class="at">x =</span> year_month, <span class="at">y =</span> avg_var)) <span class="sc">+</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">y =</span> <span class="fu">paste</span>(<span class="st">"Average"</span>, variable),</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="st">"Month"</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Average Monthly"</span>, variable)) <span class="sc">+</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_classic</span>()</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(p)</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># If the specified variable is invalid  </span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Invalid variable name. Choose a variable present in the data frame."</span>)</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a data frame of monthly averages of the variables volume, price, </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># temperature and wind_production in long format.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df_avg_long <span class="ot">&lt;-</span> </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Select the specified variables</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(date, volume, temperature, price, wind_production) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate monthly averages for each variable</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">year_month =</span> <span class="fu">floor_date</span>(date, <span class="st">"month"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(year_month) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_vol =</span> <span class="fu">mean</span>(volume, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_temp =</span> <span class="fu">mean</span>(temperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_price =</span> <span class="fu">mean</span>(price, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_wind =</span> <span class="fu">mean</span>(wind_production, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scale the values </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_vol =</span> <span class="fu">scale</span>(avg_vol), </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_wind =</span> <span class="fu">scale</span>(avg_wind),</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_temp =</span> <span class="fu">scale</span>(avg_temp),</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_price =</span> <span class="fu">scale</span>(avg_price)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pivot to long format</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">cols =</span> <span class="sc">-</span>year_month,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">names_to =</span> <span class="st">"variable"</span>,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_to =</span> <span class="st">"scaled values"</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a loop that creates plots of specified variables</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># List of variables that we want to visualize monthly data</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>variable_list <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"temperature"</span>, <span class="st">"volume"</span>, <span class="st">"price"</span>, <span class="st">"wind_production"</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialized list to store the plot objects</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>plot_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Looping through the variable list and applying the plot function for each variable</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> variable_list) {</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">plot_avg_monthly</span>(<span class="at">data =</span> df, <span class="at">variable =</span> i)  <span class="co"># calling the monthly plot function</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  plot_list[[i]] <span class="ot">&lt;-</span> p                             <span class="co"># storing the plot in a list making it accessible later                 </span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>We start by commenting the plot of monthly averages of temperature.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot monthly average temperature</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>plot_list<span class="sc">$</span>temperature</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the specified variables</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_avg_long <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(year_month) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tail</span>(<span class="dv">60</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> year_month,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">`</span><span class="at">scaled values</span><span class="st">`</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> variable</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Relationship between variables"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Months"</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Scaled values"</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Assignment2_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="Assignment2_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>As expected we see variations in average temperatures between the seasons. We notice that the lowest temperatures are recorded during winter and the highest during summers. Also, we notice that the min. and max. temperatures are relatively equal each year.</p>
-<p>We can also comment on the plot of monthly averages in volume.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot monthly average volume</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>plot_list<span class="sc">$</span>volume</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="Assignment2_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>In the plot we se that the energy consumption is is at max during winter and are lowest during winters. There are also differences between different year, but no great differences.</p>
-<p>The next plot to examine is the plot of monthly averages of price.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot monthly average price</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plot_list<span class="sc">$</span>price</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="Assignment2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>We notice some seasonal trends in the prices of energy, however, the biggest variations is betwween years. W notice a substantial dip in energy prices during the summer of 2015, however the price continued to rise up until the winter of 2019. After that it has returned to 2018-levels.</p>
-<p>The last single plot to examine is the plot of monthly wind production.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot monthly average wind production</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plot_list<span class="sc">$</span>wind_production. </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
-</div>
-</div>
-<p>Also in this plot we notice seasonal variations with highs during autumn/winter and lows during summer.</p>
-<p>Lastly, we can examine the relationship between the different variables.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a function that handles multiple variables and creates single plot</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plot_avg_monthly_multi <span class="ot">&lt;-</span> <span class="cf">function</span>(data, variables) {</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the specified variable is valid</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">all</span>(variables <span class="sc">%in%</span> <span class="fu">names</span>(data))) {</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract year and month, calculate the average per month of both variables</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    avg_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">year_month =</span> <span class="fu">floor_date</span>(date, <span class="st">"month"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(year_month) <span class="sc">%&gt;%</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="at">avg_var1 =</span> <span class="fu">mean</span>(<span class="fu">get</span>(variables[<span class="dv">1</span>]), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">avg_var2 =</span> <span class="fu">mean</span>(<span class="fu">get</span>(variables[<span class="dv">2</span>]), <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute a scaling factor to map both variables onto a similar scale</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    scale_factor <span class="ot">&lt;-</span> <span class="fu">mean</span>(avg_data<span class="sc">$</span>avg_var1, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> </span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">mean</span>(avg_data<span class="sc">$</span>avg_var2, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(avg_data, <span class="fu">aes</span>(<span class="at">x =</span> year_month)) <span class="sc">+</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> avg_var1), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> avg_var2 <span class="sc">*</span> scale_factor), <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">name =</span> <span class="fu">paste</span>(<span class="st">"Average"</span>, variables[<span class="dv">1</span>]),</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">sec.axis =</span> <span class="fu">sec_axis</span>(<span class="sc">~</span>. <span class="sc">/</span> scale_factor, <span class="at">name =</span> <span class="fu">paste</span>(<span class="st">"Average"</span>, variables[<span class="dv">2</span>])),</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">labels =</span> scales<span class="sc">::</span>number</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Month"</span>,</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Monthly averages of"</span>, <span class="fu">paste</span>(variables, <span class="at">collapse =</span> <span class="st">" &amp; "</span>))</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_classic</span>()</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(p)</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># If the specified variable is invalid  </span></span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Invalid variable name. Choose variables present in the data frame."</span>)</span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot relationship between variables</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize empty list</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>plot_list_multi <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop over variables and store comparison plots in list</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(variable_list) <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (j <span class="cf">in</span> (i <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span><span class="fu">length</span>(variable_list)) {</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    current_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(variable_list[i], variable_list[j])</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">plot_avg_monthly_multi</span>(df, current_vars)</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    plot_name <span class="ot">&lt;-</span> <span class="fu">paste</span>(current_vars, <span class="at">collapse =</span> <span class="st">"_vs_"</span>)</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    plot_list_multi[[plot_name]] <span class="ot">&lt;-</span> p</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Comparing the four specified variables adds up to six comparison plots. We chose only to discuss the three most relevant, temperature vs.&nbsp;volume and price vs.&nbsp;volume. Notice that to compare the variables, we have added a second axis to each plot since the variables have different scales. In some cases, like the temperature vs.&nbsp;volume plot, this has lead to some errors. Errors like this is easy to spot if you compare with the single variable plot. Despite the scaling errors we chose to include them since they visualize relationships between the variables.</p>
-<p>The first plot we examine is the temperature vs.&nbsp;volume plot.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare temperature vs. volume</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plot_list_multi<span class="sc">$</span>temperature_vs_volume</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="Assignment2_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Despite the errors in scaling, we notice that when temperatures increases, the volume decrease and vice versa.</p>
-<p>The second plot of interest is the volume vs.&nbsp;price plot.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>plot_list_multi<span class="sc">$</span>volume_vs_price</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="Assignment2_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>We notice the at times close relationship of the two variables. In periods of high volume, the price tends to be relativly high and vice versa. This is likely due to a energy surplus in periods with low demand resulting in low prices, and increased prices in periods of high demand.</p>
+<p>Upon examining the provided plot, a few notable patterns and relationships emerge. Firstly, we notice a strong inverse relationship between average temperature and volume. As the temperature dips, notably around January and then again toward the end of the year, there’s a noticeable rise in volume, suggesting that colder months might drive up the demand for energy. This is reinforced by the trend of wind power production. Wind production seems to rise during periods of colder temperatures, which could indicate that colder months are, in general, windier.</p>
+<p>In terms of pricing, there’s a clear spike around April. This might be influenced by multiple factors, but its correlation with the other variables at that specific time is less direct. While volume and temperature show a consistent inverse relationship, the relationship between price and other variables is less linear, suggesting that other external factors might play a role in influencing the price.</p>
+<p>The relationships highlighted here offer valuable insights, but a deeper analysis of the data and potential external influences will likely provide a more comprehensive understanding.</p>
 </section>
 <section id="task-b.-why-will-a-ols-regression-on-quantity-not-provide-an-estimate-of-demand" class="level2">
 <h2 class="anchored" data-anchor-id="task-b.-why-will-a-ols-regression-on-quantity-not-provide-an-estimate-of-demand">Task B. Why will a OLS regression on quantity not provide an estimate of demand?</h2>
-<p>An OLS regression of quantity on price alone, even with controls, is not fitted to estimate demand due to many reasons:</p>
-<ol type="1">
-<li><p>Endogeneity exists as price and quantity in markets are simultaneously determined</p></li>
-<li><p>Omitted variables like for example consumer income, advertising and seasonality. These can affect and lead to omitted variable bias.</p></li>
-<li><p>Measurement errors in price and quantity can contribute to bias for the estimates for the parameters</p></li>
-<li><p>OLS (or Gauss-Markow theorem) assumes a linear relationship. This may not hold if the demand curves are nonlinear.</p></li>
-<li><p>Heteroskedasticity which is variability in the error term given any explanatory variable. In this case the variability in quantity varies across price levels which in return can affect standard erros.</p></li>
-<li><p>The demand’s dynamic behavior and seasonality may not be sufficiently captured. To estimate demand accurately, more advanced econometric methods are often required. These advanced methods usually contain instrumental variable regression and structural equation modelling. Controlling for relevant factors and improve our data quality can also make the estimation precision better.</p></li>
-</ol>
+<p>Using an OLS regression on quantity with price as the only predictor isn’t good enough to accurately estimate demand, even with added controls. There’s a problem with endogeneity because price and quantity in markets are decided at the same time. Also, important variables like consumer income, advertising, and seasonality might be left out, which can introduce bias. Mistakes in measuring price or quantity can also affect the accuracy of our results. The OLS method assumes a straight line relationship between variables, but if the demand curves aren’t straight lines, this becomes an issue. Another concern is heteroskedasticity, where the variability of the error changes with different price levels, affecting the reliability of standard errors. The changing behavior of demand and its seasonality might not be fully captured by OLS. To get a more detailed and accurate picture of demand, methods like instrumental variable regression are often better. Improving data quality and including controls for relevant factors can also make our estimates more precise.</p>
 </section>
 <section id="task-c.-considering-choice-of-instrument-for-price-when-estimating-demand" class="level2">
 <h2 class="anchored" data-anchor-id="task-c.-considering-choice-of-instrument-for-price-when-estimating-demand">Task C. Considering choice of instrument for price when estimating demand</h2>
-<p>When choosing a instrument for price when estimating demand, it’s important to consider the validity of the instrument in terms of the requirements for a valid instrument. These requirements can be relevance, exogeneity, and exclusion restrictions:</p>
-<ol type="1">
-<li><p>Why is temperature not a valid instrument for price when estimating demand? The key requirements for exogeneity may not be satisfied if one were to use temperature as an instrument for price when estimating demand. (Exogeneity refers to the condition in which an independent variable is unrelated to the error term, indicating that it is not influenced by unobserved factors in the model.) Temperature is usually affected by factors that also may affect demand, like seasonality and consumber behavior. The instrument would not be valid due to endogeneity concerns if temperature is correlated with unobservable demand shocks.</p></li>
-<li><p>Why can magazine levels (or deviations) and wind power production potentially be good instruments for price when estimating demand? Magazine levels and wind power production could potentially be sufficient instruments for price as they can fulfil the requirements for a valid instrument. They should be relevant in other terms they should be affecting the price. In addition, they should be exogenous, meaning that they should not be correlated with unobservable factors. But establishing their exogeneity requires thoughtful consideration and testing.</p></li>
-<li><p>Why is it necessary to control for seasonality (say, calendar month) and temperature? It is necessary to control for seasonality and temperature to avoid omitted variable bias. (Omitted variable bias appear if a relevant variable that affects the dependent variable is excluded in a regression model. This leads to biased and estimates of the coefficients of the variables that are included.) Seasonality captures variation in the systematic demand throughout the year unrelated to price. Meanwhile temperature affects demand independently. When we control for these factors, we ensure precise demand estimates.</p></li>
-<li><p>How could controlling for weekday and year be useful? Incorporating controls for weekday and year is beneficial to justify for demand patterns variation. Weekdays and weekends usually give different demand profiles given the consumers consumption. Meanwhile years would capture trends that are long-term and macroeconomic affects on demand. These controls strengthen the accuracy of demand estimates, while taking into account sources of variation unrelated to price.</p></li>
-</ol>
+<p>When picking an instrument for price in estimating demand, the instrument’s validity is crucial. Valid instruments should be relevant, exogenous (not linked to unobserved factors), and shouldn’t directly affect the dependent variable.</p>
+<section id="is-temperature-a-valid-instrument-for-price-in-estimating-demand" class="level3">
+<h3 class="anchored" data-anchor-id="is-temperature-a-valid-instrument-for-price-in-estimating-demand">Is temperature a valid instrument for price in estimating demand?</h3>
+<p>Using temperature as an instrument for price could be problematic. Temperature often changes with factors that can also influence demand, like the time of year or consumer habits. If temperature is connected with unseen demand shifts, it’s not a valid choice because of these links.</p>
+</section>
+<section id="could-magazine-levels-and-wind-power-production-be-good-price-instruments-when-estimating-demand" class="level3">
+<h3 class="anchored" data-anchor-id="could-magazine-levels-and-wind-power-production-be-good-price-instruments-when-estimating-demand">Could magazine levels and wind power production be good price instruments when estimating demand?</h3>
+<p>Both magazine levels and wind power production might be effective instruments for price. They need to influence the price and remain exogenous, meaning they shouldn’t be linked with unseen factors affecting demand. It’s essential to carefully assess their exogeneity by testing if they’re associated with other unobserved variables.</p>
+</section>
+<section id="why-do-we-need-to-adjust-for-seasonality-and-temperature" class="level3">
+<h3 class="anchored" data-anchor-id="why-do-we-need-to-adjust-for-seasonality-and-temperature">Why do we need to adjust for seasonality and temperature?</h3>
+<p>Adjusting for the time of year and temperature ensures our demand estimates are more accurate. The time of year can cause regular shifts in demand not related to price, while temperature can change demand directly. By adjusting for these, we’re making sure other factors aren’t distorting our demand estimates.</p>
+</section>
+<section id="how-can-adjusting-for-weekday-and-year-help" class="level3">
+<h3 class="anchored" data-anchor-id="how-can-adjusting-for-weekday-and-year-help">How can adjusting for weekday and year help?</h3>
+<p>Including weekday and year adjustments can account for different demand patterns. For instance, demand might differ on weekdays compared to weekends. Adjusting for year can capture larger trends or bigger economic impacts on demand. By including these adjustments, we get a clearer picture of demand that’s not clouded by these other factors.</p>
+</section>
+</section>
+<section id="task-d.-providing-a-table-of-regression-results" class="level2">
+<h2 class="anchored" data-anchor-id="task-d.-providing-a-table-of-regression-results">Task D. Providing a table of regression results</h2>
+<p>Using the provided equations, we conducted several regression analyses. To enhance clarity, we rescaled some of the data, particularly dividing volume and wind power production by 1,000. We also added variables to our dataset indicating the year, month, and weekday for each observation.</p>
+<p>We chose to present a table of all regression result, but for enhanced clarity we omitted dummies for year, month and day i all regressions, and the regression statistics as they will not be of value to the following discussion.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create new variables in data frame containing the dummies for</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># year, month and day in which the observation is made and scale variables.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_new <span class="ot">&lt;-</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  df <span class="sc">%&gt;%</span> </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">volume =</span> volume <span class="sc">/</span> <span class="dv">1000</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">wind_production =</span> wind_production <span class="sc">/</span> <span class="dv">1000</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">as.factor</span>(<span class="fu">year</span>(date)),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">month =</span> <span class="fu">as.factor</span>(<span class="fu">month</span>(date)),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">weekday =</span> <span class="fu">as.factor</span>(<span class="fu">wday</span>(date,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">label =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">week_start =</span> <span class="dv">1</span>))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform specified regressions</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># First stage</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>first_stage <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  price <span class="sc">~</span> magazine_level <span class="sc">+</span> temperature <span class="sc">+</span> wind_production <span class="sc">+</span> year <span class="sc">+</span> month <span class="sc">+</span> weekday,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_new</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduced form</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>reduced_form <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  volume <span class="sc">~</span> magazine_level <span class="sc">+</span> temperature <span class="sc">+</span> wind_production <span class="sc">+</span> year <span class="sc">+</span> month <span class="sc">+</span> weekday,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_new</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># IV/2SLS </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>iv_model <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  volume <span class="sc">~</span> price <span class="sc">+</span> temperature <span class="sc">+</span> year <span class="sc">+</span> month <span class="sc">+</span> weekday </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span> magazine_level <span class="sc">+</span> temperature <span class="sc">+</span> wind_production <span class="sc">+</span> year <span class="sc">+</span> month <span class="sc">+</span> weekday, </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_new</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># OLS</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>ols_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  volume <span class="sc">~</span> price <span class="sc">+</span> temperature <span class="sc">+</span> year <span class="sc">+</span> month <span class="sc">+</span> weekday,</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_new</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regression table of all regression.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Omitting statistics to make the table more readable.</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Note! Scaling of variables 'volume' and 'wind_production' of 10^-3, and </span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># that all dummies is omitted from the regression table.</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"Table including all regressions"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  first_stage,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  reduced_form,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  iv_model,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  ols_model,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">omit =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"month"</span>, <span class="st">"weekday"</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">omit.table.layout =</span> <span class="st">"sn"</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">dep.var.caption =</span> <span class="st">"First stage (1) | Reduced form (2) | IV/2SLS (3) |OLS (4)"</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Table including all regressions
+============================================================================
+                 First stage (1) | Reduced form (2) | IV/2SLS (3) |OLS (4)  
+                ------------------------------------------------------------
+                     price                         volume                   
+                      OLS            OLS        instrumental       OLS      
+                                                  variable                  
+                      (1)            (2)            (3)            (4)      
+----------------------------------------------------------------------------
+magazine_level     -0.380***       1.282***                                 
+                    (0.022)        (0.162)                                  
+                                                                            
+price                                             1.831***       1.173***   
+                                                  (0.364)        (0.146)    
+                                                                            
+temperature        -0.321***      -12.755***     -12.036***     -12.341***  
+                    (0.036)        (0.270)        (0.331)        (0.292)    
+                                                                            
+wind_production    -0.035***      -0.356***                                 
+                    (0.002)        (0.019)                                  
+                                                                            
+Constant           63.158***     1,062.206***   1,037.639***   1,064.506*** 
+                    (1.287)        (9.653)        (15.479)       (7.300)    
+                                                                            
+============================================================================
+============================================================================</code></pre>
+</div>
+</div>
+<p>With basis in the results above, we will take a closer look at the OLS and IV/2SLS regressions, provide a short description of their purpose and our findings, and a comparison of the two models.</p>
+<section id="ols-regression" class="level3">
+<h3 class="anchored" data-anchor-id="ols-regression">OLS regression</h3>
+<p>The Ordinary Least Squares (OLS) regression serves as our benchmark to determine the level of bias introduced by endogeneity. Endogeneity, which arises when an independent variable correlates with the error term, can skew results, leading to biased or unreliable estimates.</p>
+<p>For the OLS regression, coefficients for price and temperature are 1.173 and -12.341 respectively. The accompanying error terms are small and positive, suggesting that our model fits the data well for the variables chosen.</p>
+</section>
+<section id="iv2sls-regression" class="level3">
+<h3 class="anchored" data-anchor-id="iv2sls-regression">IV/2SLS regression</h3>
+<p>The Instrumental Variable/Two-Stage Least Squares (IV/2SLS) regression aims to estimate the demand for electricity in the power market while accounting for endogeneity. The model’s foundation lies in the first stage and reduced form regressions.</p>
+<p>In the IV/2SLS model, with volume as the dependent variable, both price and temperature coefficients are statistically significant at the 1% level. Their values are 1.831 and -12.036 respectively. Interestingly, an increase in price corresponds to an increase in volume, a trend that might be influenced by limited supply during peak demand months due to magazine levels.</p>
+</section>
+<section id="comparison-of-the-two-models" class="level3">
+<h3 class="anchored" data-anchor-id="comparison-of-the-two-models">Comparison of the two models</h3>
+<p>When comparing the IV/2SLS model to the OLS benchmark, there are slight variations in the coefficients. For instance, the price coefficient in IV/2SLS is 1.831, while in OLS it’s 1.173. Bigger price changes could highlight these differences even more, showing the importance of using both models in various situations.</p>
+<p>While the OLS model provides a good starting point, the IV/2SLS model offers deeper insights by addressing potential endogeneity concerns. The observed differences in the coefficients between the two models highlight the importance of considering both techniques, especially in an economic context where even small variations can have large implications.</p>
+</section>
+</section>
+<section id="task-e.-commenting-on-the-first-stage-regression" class="level2">
+<h2 class="anchored" data-anchor-id="task-e.-commenting-on-the-first-stage-regression">Task E. Commenting on the first stage regression</h2>
+<p>The first stage regression is designed to address endogeneity by identifying instrumental variables that are correlated to the endogenous variable but is uncorrelated with the error term. This process helps to ensure consistent and unbiased parameter estimates.</p>
+<p>In this stage, we examine the relationship between several instruments, namely magazine levels, temperature, and wind production, and the variable we aim to instrument, which is the electricity price.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regression table for first stage, including stats</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"First stage"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  first_stage,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">omit =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"month"</span>, <span class="st">"weekday"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+First stage
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                               price           
+-----------------------------------------------
+magazine_level               -0.380***         
+                              (0.022)          
+                                               
+temperature                  -0.321***         
+                              (0.036)          
+                                               
+wind_production              -0.035***         
+                              (0.002)          
+                                               
+Constant                     63.158***         
+                              (1.287)          
+                                               
+-----------------------------------------------
+Observations                   2,556           
+R2                             0.717           
+Adjusted R2                    0.714           
+Residual Std. Error      5.285 (df = 2529)     
+F Statistic         246.224*** (df = 26; 2529) 
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>The coefficients associated with magazine levels, temperatures, and wind production are -0.380, -0.321, and -0.035 respectively. All of these coefficients are negative and statistically significant at the 1% level. This suggests that as these variables increase, the price of electricity (the dependent variable) tends to decrease. Additionally, the error terms for these coefficients are small and positive.</p>
+<p>The negative relationship between magazine levels and price introduced above is intuitive: when magazine levels are high, it typically indicates a supply of electricity greater than the demand. Furthermore, during colder months, inflows to the magazines are reduced, which can lead to higher electricity prices due to diminished supply.</p>
+<p>Similarly, it is logical for the electricity price to decrease with rising temperatures, as warmer conditions reduce the need for heating in homes and buildings. This inverse relationship is evident in the plot (see task A), which shows the average volume (depicted in blue) and average temperature (shown in green) displaying opposite trends across months.</p>
+<p>Lastly, wind production, which can vary seasonally and often peaks during winter months, exhibits a mild correlation with magazine levels, a trend also visible in the plot (task A). The influence of these instruments on the price of electricity aligns well with economic reasoning.</p>
+</section>
+<section id="task-f.-commenting-on-the-reduced-form" class="level2">
+<h2 class="anchored" data-anchor-id="task-f.-commenting-on-the-reduced-form">Task F. Commenting on the reduced form</h2>
+<p>We substituted the endogenous variable, electricity demand at time <em>t</em>, with the instruments in our reduced form regression. This regression took volume as the dependent variable, using magazine level, temperature, and wind production as the independent variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regression table for reduced form, including stats</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"Reduced form"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  reduced_form,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">omit =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"month"</span>, <span class="st">"weekday"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Reduced form
+================================================
+                        Dependent variable:     
+                    ----------------------------
+                               volume           
+------------------------------------------------
+magazine_level                1.282***          
+                              (0.162)           
+                                                
+temperature                  -12.755***         
+                              (0.270)           
+                                                
+wind_production              -0.356***          
+                              (0.019)           
+                                                
+Constant                    1,062.206***        
+                              (9.653)           
+                                                
+------------------------------------------------
+Observations                   2,556            
+R2                             0.944            
+Adjusted R2                    0.943            
+Residual Std. Error      39.648 (df = 2529)     
+F Statistic         1,627.381*** (df = 26; 2529)
+================================================
+Note:                *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>In the table of regression results all coefficients were significant at the 1% level, and error terms were consistently small and positive. We noticed a very high goodness-of-fit at 94.4%. Despite this result indicating that out model fit the data really well, such a high goodness-of-fit raises suspicion of potential data loss or other errors in the estimation.</p>
+<p>F-statistic was statistically significant 1% level giving a value of 1627.381 which is very high. This implies that the variables included in the model are jointly statistically significant on the on demanded quantity.</p>
+<p>Lastly, we investigated whether the coefficients from the first stage and the reduced form were as we expected based on the discussion earlier about instrument validity (see task C for clarity). We observed a simultaneity endogeneity issue. Price and volume can influence each other, questioning the validity of the instruments. For instance, a price increase due to electricity market changes would reduce consumption. Conversely, changes in volume can affect the price.</p>
+</section>
+<section id="task-g.-application-of-the-iv2sls-estimates" class="level2">
+<h2 class="anchored" data-anchor-id="task-g.-application-of-the-iv2sls-estimates">Task G. Application of the IV/2SLS estimates</h2>
+<p>Applying our estimates of the coefficient for price in our IV/2SLS regression (the structural form) of 1.831, a permanent increase in electricity prices of 10 EUR / MWh would suggest an increase in the dependent value, volume, og 18.831 units. Remember that before performing the regression, we divided the ‘volume’ variable by 1,000, thus one unit of the variable volume is 1,000 MWh . Therefore, we can conclude with a basis in our estimates that a permanent increase in electricity prices of 10 EUR / MWh we expect the volume to increase by 1,831 MWh.</p>
+<p>Our results is rather surprising. Standard economic theory suggests that an increase in prices usually reduces the demand. However, the source of this surprising result is the problems of endogeneity as discussed earlier. As we are trying to determine the effect of price on volume, we didn’t include the other explanatory variables magazine level and wind production that is correlated with both price and volume, thus resulting in a biased regression coefficient for price.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> volume, <span class="at">y =</span> price)) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Assignment2_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>reg1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(volume<span class="sc">~</span>price <span class="sc">+</span>magazine_level <span class="sc">+</span> temperature <span class="sc">+</span> wind_production <span class="sc">+</span> year <span class="sc">+</span> month <span class="sc">+</span> weekday, <span class="at">data =</span> df_new)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(reg1, <span class="at">type =</span> <span class="st">"text"</span>, <span class="at">omit =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"month"</span>, <span class="st">"week"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+================================================
+                        Dependent variable:     
+                    ----------------------------
+                               volume           
+------------------------------------------------
+price                         1.047***          
+                              (0.148)           
+                                                
+magazine_level                1.680***          
+                              (0.170)           
+                                                
+temperature                  -12.419***         
+                              (0.271)           
+                                                
+wind_production              -0.320***          
+                              (0.019)           
+                                                
+Constant                     996.107***         
+                              (13.360)          
+                                                
+------------------------------------------------
+Observations                   2,556            
+R2                             0.945            
+Adjusted R2                    0.944            
+Residual Std. Error      39.268 (df = 2528)     
+F Statistic         1,599.442*** (df = 27; 2528)
+================================================
+Note:                *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+</section>
 </section>
 
 </main>
