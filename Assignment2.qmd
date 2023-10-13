@@ -35,18 +35,16 @@ df_avg_long <-
     mutate(year_month = floor_date(date, "month")) %>% 
     group_by(year_month) %>% 
     summarise(
-      avg_vol = mean(volume, na.rm = TRUE),
-      avg_temp = mean(temperature, na.rm = TRUE),
-      avg_price = mean(price, na.rm = TRUE),
-      avg_wind = mean(wind_production, na.rm = TRUE)
+      across(
+        c(volume, temperature, price, wind_production), 
+        list(mean = ~mean(.x, na.rm = TRUE)), 
+        .names = "avg_{col}"
+      )
     ) %>% 
     
     # Scale the values 
     mutate(
-      avg_vol = scale(avg_vol), 
-      avg_wind = scale(avg_wind),
-      avg_temp = scale(avg_temp),
-      avg_price = scale(avg_price)
+      across(starts_with("avg_"), scale)
     ) %>% 
     
     # Pivot to long format
@@ -107,18 +105,16 @@ We chose to present a table of all regression result, but for enhanced clarity w
 
 ```{r}
 # Create new variables in data frame containing the dummies for
-# year, month and day in which the observation is made and scale variables.
+# year, month and day in which the observation is made and scale variables
+# wind_production and volume
 df_new <- 
   df %>% 
-  mutate(
-    volume = volume / 1000,
-    wind_production = wind_production / 1000,
-    year = as.factor(year(date)),
-    month = as.factor(month(date)),
-    weekday = as.factor(wday(date,
-                   label = FALSE,
-                   week_start = 1))
-  )
+    mutate(
+      across(c(volume, wind_production), ~ .x / 1000),
+      year = as.factor(year(date)),
+      month = as.factor(month(date)),
+      weekday = as.factor(wday(date, label = FALSE, week_start = 1))
+    )
 ```
 ```{r}
 # Perform specified regressions
@@ -150,9 +146,7 @@ ols_model <- lm(
 ```
 ```{r}
 # Regression table of all regression.
-# Omitting statistics to make the table more readable.
-# Note! Scaling of variables 'volume' and 'wind_production' of 10^-3, and 
-# that all dummies is omitted from the regression table.
+# Omit statistics and dummies to make the table more readable
 stargazer(
   title = "Table including all regressions",
   first_stage,
